@@ -13,3 +13,8 @@ for i in range(no_of_lines):
 
 #populates the board with the pieces
 board.createBoard(lines)
+board.move(1,6,1,7)
+print("\n")
+print("\n")
+print("moved:" )
+board.viewBoard()

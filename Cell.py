@@ -8,9 +8,9 @@ class Cell():
 		#check if the piece is ocuppied, if so create that piece
 		#otherwise keep it as a blank cell
 		if(occupiedBy != "-"):
-			self.occupiedBy = self.createPiece(x,y, occupiedBy)
+			self.occupiedBy = p.Piece(occupiedBy)
 		else:
-			self.occupiedBy = "-1"
+			self.occupiedBy = " "
 
 
 	def __str__(self):
@@ -20,12 +20,11 @@ class Cell():
 	def __repr__(self):
 		return str(self.occupiedBy)
 
+	
+	def changePiece(self,otherCell):
+		"""Swapping pieces when valid move"""
+		temp = self.occupiedBy
+		self.occupiedBy = otherCell.occupiedBy
+		otherCell.occupiedBy = temp
 
-	def createPiece(self,x,y,occupiedBy):
-		'''Creates piece that lies on top of the cell'''
-		return p.Piece(x,y,occupiedBy)
-
-
-	def destory(self):
-		"""Getting rid of piece"""
-		pass
+	

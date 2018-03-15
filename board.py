@@ -38,9 +38,10 @@ class Board():
 	# def destorypiece():
 	# 	destorypiec
 
-	# def move(oldX,oldY,newX,newY):
-	# 	check if player can move
-	# 	move
+	def move(self,oldX,oldY,newX,newY):
+		'''Moves piece on board'''
+	 #	check if player can move (NEED VALID MOVE)
+		self.board[oldY][oldX].changePiece(self.board[newY][newX])
 
 	# def shrinkboard():
 	# 	shrinkboard

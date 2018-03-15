@@ -1,8 +1,6 @@
 class Piece():
 	"""docstring for Piece"""
-	def __init__(self, x,y,kindOfPiece):
-		self.x = x
-		self.y = y
+	def __init__(self,kindOfPiece):
 		self.kindOfPiece = kindOfPiece
 	
 
@@ -11,11 +9,3 @@ class Piece():
 
 	def __repr__(self):
 		return self.kindOfPiece
-
-	def moveX(self,newX):
-		#change the x
-		self.x = newX
-
-
-	def moveY(self,newY):
-		self.y = newY
