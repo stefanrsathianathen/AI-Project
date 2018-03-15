@@ -1,32 +1,49 @@
-import piece as p
-class Board():
-	"""docstring fos Board"""
+import Cell as c
 
-	board = []
-	numberofMoves = []
-	# currentmove teranary operator?
+class Board():
+	"""docstring for Board"""
+
+	board = [[],[],[],[],[],[],[],[]]
+	numberofMoves = 0
+	
 	def __init__(self):
 		pass
 	
-	def createBoard(nestedList?):
-		function to create board
+	
+	def createBoard(self,boardInput):
+		'''Loop through text input and put into board by creating cell
+		then the cell will create a piece if it is occupied by a @ or O or X'''
+		for y in range(0,len(boardInput)):
+			for x in range(0,len(boardInput[y])):
+				self.board[y].append(self.createCell(x,y,boardInput[y][x]))
+		self.viewBoard()
 
-	def validMove():
-		check if valid valid validMove
+	
+	def viewBoard(self):
+		#to view the board correctly
+		for x in self.board:
+			print(x)
 
-	def createPiece(x,y):
-		create and place
+	# def validMove():
+	# 	check if valid valid validMove
 
-	def winner():
-		check if winner
+	
+	def createCell(self,x,y,occupiedBy):
+		"""Creates a cell. If the cell is occupied by a @ or ) or X it will create a piece that lies on top of the cell"""
+		return c.Cell(x,y,occupiedBy)
 
-	def destorypiece():
-		destorypiec
+	# def winner():
+	# 	check if winner
 
-	def move(oldX,oldY,newX,newY):
-		check if player can move
-		move
+	# def destorypiece():
+	# 	destorypiec
 
-	def shrinkboard():
-		shrinkboard
+	# def move(oldX,oldY,newX,newY):
+	# 	check if player can move
+	# 	move
+
+	# def shrinkboard():
+	# 	shrinkboard
+
+
 
