@@ -20,7 +20,9 @@ class Cell():
 	def __repr__(self):
 		return str(self.occupiedBy)
 
-	
+	def occupiedBy(self):
+		return self.occupiedBy
+
 	def changePiece(self,otherCell):
 		"""Swapping pieces when valid move"""
 		temp = self.occupiedBy
