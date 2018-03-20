@@ -1,11 +1,9 @@
 import Cell as c
-import Player as p
 class Board():
 	"""docstring for Board"""
 
 	board = [[],[],[],[],[],[],[],[]]
 	numberofMoves = 0
-	player1 = p.Player()
 
 	def __init__(self):
 		pass
@@ -25,17 +23,53 @@ class Board():
 		for x in self.board:
 			print(x)
 
-	def validMove(self, newX, newY):
-		if (board[newX][newY].occupiedBy() == "-"):
-			return True;
-		return False;
+	def validMove(self, oldX, oldY, newX, newY, change):
+		if  7<newX<0 or 7<newY<0:
+			return False 
+		if (self.board[newX][newY].occupiedBy == " "):
+			return True
+		if (self.board[newX][newY].occupiedBy == self.board[oldX][oldY].occupiedBy ):
+			return self.checkJump(oldX,oldY,newX,newY,change)
+		return False
+	
+	def checkJump(self, oldX, oldY, newX, newY, change):
+		if  7<newX<0 or 7<newY<0:
+			return False 
+		if change == 'z':
+			return False
+		elif change == 'x':
+			difference = newX - oldX
+			return self.validMove(newX,newY, newX+difference,newY,'z')
+		else:
+			difference = newY - oldY
+			return self.validMove(newX,newY, newX, newY+difference,'z')
 
 	def findNumberOfMoves(self):
 
-		totalMoves = 0;
+		blackMoves = 0
+		whiteMoves = 0
 
-		for row in range(0, len(board)):
-			for x in range(0, len(row)):
+		for y in range(0, len(self.board)-1):
+			for x in range(0, len(self.board[y])-1):
+				netMoves = 0
+				if self.board[y][x].occupiedBy == 'X' or self.board[y][x].occupiedBy == ' ':
+					pass
+				else:
+					if self.validMove(x,y,x+1,y,"x"):
+						netMoves += 1
+					if self.validMove(x,y,x-1,y,"x"):
+						netMoves += 1
+					if self.validMove(x,y,x,y+1,"y"):
+						netMoves += 1
+					if self.validMove(x,y,x,y-1,"y"):
+						netMoves += 1
+				if self.board[y][x].occupiedBy == '@':
+					blackMoves += netMoves
+				else:
+					whiteMoves += netMoves
+		print(whiteMoves)
+		print(blackMoves)
+
 
 	def createCell(self,x,y,occupiedBy):
 		"""Creates a cell. If the cell is occupied by a @ or ) or X it will create a piece that lies on top of the cell"""
