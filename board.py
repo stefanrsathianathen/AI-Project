@@ -5,11 +5,11 @@ class Board():
 
 	board = [[],[],[],[],[],[],[],[]]
 	numberofMoves = 0
-	
+
 	def __init__(self):
 		pass
-	
-	
+
+
 	def createBoard(self,boardInput):
 		'''Loop through text input and put into board by creating cell
 		then the cell will create a piece if it is occupied by a @ or O or X'''
@@ -18,7 +18,7 @@ class Board():
 				self.board[y].append(self.createCell(x,y,boardInput[y][x]))
 		self.viewBoard()
 
-	
+
 	def viewBoard(self):
 		#to view the board correctly
 		for x in self.board:
@@ -27,7 +27,7 @@ class Board():
 	# def validMove():
 	# 	check if valid valid validMove
 
-	
+
 	def createCell(self,x,y,occupiedBy):
 		"""Creates a cell. If the cell is occupied by a @ or ) or X it will create a piece that lies on top of the cell"""
 		return c.Cell(x,y,occupiedBy)
@@ -45,6 +45,4 @@ class Board():
 
 	# def shrinkboard():
 	# 	shrinkboard
-
-
-
+	# test
