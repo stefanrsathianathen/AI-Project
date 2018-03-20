@@ -1,10 +1,11 @@
 import Cell as c
-
+import Player as p
 class Board():
 	"""docstring for Board"""
 
 	board = [[],[],[],[],[],[],[],[]]
 	numberofMoves = 0
+	player1 = p.Player()
 
 	def __init__(self):
 		pass
@@ -24,16 +25,21 @@ class Board():
 		for x in self.board:
 			print(x)
 
-	# def validMove():
-	# 	check if valid valid validMove
+	def validMove(self, newX, newY):
+		if (board[newX][newY].occupiedBy() == "-"):
+			return True;
+		return False;
 
+	def findNumberOfMoves(self):
+
+		totalMoves = 0;
+
+		for row in range(0, len(board)):
+			for x in range(0, len(row)):
 
 	def createCell(self,x,y,occupiedBy):
 		"""Creates a cell. If the cell is occupied by a @ or ) or X it will create a piece that lies on top of the cell"""
 		return c.Cell(x,y,occupiedBy)
-
-	# def winner():
-	# 	check if winner
 
 	# def destorypiece():
 	# 	destorypiec
@@ -45,4 +51,3 @@ class Board():
 
 	# def shrinkboard():
 	# 	shrinkboard
-	# test
