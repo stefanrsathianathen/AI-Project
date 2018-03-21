@@ -14,4 +14,3 @@ for i in range(no_of_lines):
 #populates the board with the pieces
 board.createBoard(lines)
 board.findNumberOfMoves()
-board.viewBoard()

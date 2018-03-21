@@ -24,8 +24,11 @@ class Board():
 			print(x)
 
 	def validMove(self, oldX, oldY, newX, newY, change):
-		if  7<newX<0 or 7<newY<0:
+		print(oldX, oldY, newX, newY, change)
+		if  7<newX or newX<0:
 			return False 
+		if 7<newY or newY<0:
+			return False
 		if (self.board[newX][newY].occupiedBy == " "):
 			return True
 		if (self.board[newX][newY].occupiedBy == self.board[oldX][oldY].occupiedBy ):
@@ -33,8 +36,6 @@ class Board():
 		return False
 	
 	def checkJump(self, oldX, oldY, newX, newY, change):
-		if  7<newX<0 or 7<newY<0:
-			return False 
 		if change == 'z':
 			return False
 		elif change == 'x':
