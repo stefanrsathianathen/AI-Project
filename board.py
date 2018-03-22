@@ -24,26 +24,21 @@ class Board():
 			print(x)
 
 	def validMoves(self, oldX, oldY):
-
-		if  7<newX or newX<0:
-			return False
-		if 7<newY or newY<0:
-			return False
-
 		netMoves = 0;
 
-		if (self.board[oldX + 1][oldY].occupiedBy == " " or
-			self.board[oldX + 2][oldY].occupiedBy == " "):
-			netMoves += 1;
+		if (self.board[oldX + 1][oldY].occupiedBy == " " or 
+			 oldX + 2 < 8  and self.board[oldX + 2][oldY].occupiedBy == " "):
+			netMoves += 1
 		if (self.board[oldX - 1][oldY].occupiedBy == " " or
-			self.board[oldX - 2][oldY].occupiedBy == " "):
-			netMoves += 1;
+			 oldX - 2 > -1 and self.board[oldX - 2][oldY].occupiedBy == " "):
+			netMoves += 1
 		if (self.board[oldX][oldY + 1].occupiedBy == " " or
-			self.board[oldX][oldY + 2].occupiedBy == " "):
-			netMoves += 1;
+			oldY + 2 < 8 and self.board[oldX][oldY + 2].occupiedBy == " "):
+			netMoves += 1
 		if (self.board[oldX][oldY - 1].occupiedBy == " " or 
-			self.board[oldX][oldY - 2].occupiedBy == " "):
-			netMoves += 1;
+			 oldY - 2 > -1 and self.board[oldX][oldY - 2].occupiedBy == " "):
+			netMoves += 1
+		return netMoves
 
 	def findNumberOfMoves(self):
 
@@ -52,13 +47,12 @@ class Board():
 
 		for y in range(0, len(self.board)-1):
 			for x in range(0, len(self.board[y])-1):
-				netMoves = 0
 				if self.board[y][x].occupiedBy == 'X' or self.board[y][x].occupiedBy == ' ':
 					pass
 				elif self.board[y][x].occupiedBy == '@':
-					blackMoves += validMoves(x, y)
+					blackMoves += self.validMoves(x, y)
 				else:
-					whiteMoves += validMoves(x, y)
+					whiteMoves += self.validMoves(x, y)
 		print(whiteMoves)
 		print(blackMoves)
 
