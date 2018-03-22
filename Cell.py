@@ -1,8 +1,8 @@
 import Piece as p
 class Cell():
 	"""docstring for Piece"""
-	
-	def __init__(self,x,y,occupiedBy):
+
+	def __init__(self, x, y, occupiedBy):
 		self.x = x
 		self.y = y
 		#check if the piece is ocuppied, if so create that piece
@@ -25,5 +25,3 @@ class Cell():
 		temp = self.occupiedBy
 		self.occupiedBy = otherCell.occupiedBy
 		otherCell.occupiedBy = temp
-
-	
