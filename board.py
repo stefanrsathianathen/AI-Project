@@ -26,17 +26,17 @@ class Board():
 	def validMoves(self, oldX, oldY):
 		netMoves = 0;
 
-		if (self.board[oldX + 1][oldY].occupiedBy == " " or 
-			 oldX + 2 < 8  and self.board[oldX + 2][oldY].occupiedBy == " "):
+		if (((oldX + 1 < 8) and self.board[oldY][oldX + 1].occupiedBy == " ") or
+			 ((oldX + 2 < 8)  and self.board[oldY][oldX + 2].occupiedBy == " ")):
 			netMoves += 1
-		if (self.board[oldX - 1][oldY].occupiedBy == " " or
-			 oldX - 2 > -1 and self.board[oldX - 2][oldY].occupiedBy == " "):
+		if (((oldX - 1 > -1) and self.board[oldY][oldX - 1].occupiedBy == " ") or
+			 ((oldX - 2 > -1) and self.board[oldY][oldX - 2].occupiedBy == " ")):
 			netMoves += 1
-		if (self.board[oldX][oldY + 1].occupiedBy == " " or
-			oldY + 2 < 8 and self.board[oldX][oldY + 2].occupiedBy == " "):
+		if (((oldY + 1 < 8) and self.board[oldY + 1][oldX].occupiedBy == " ") or
+			((oldY + 2 < 8) and self.board[oldY + 2][oldX].occupiedBy == " ")):
 			netMoves += 1
-		if (self.board[oldX][oldY - 1].occupiedBy == " " or 
-			 oldY - 2 > -1 and self.board[oldX][oldY - 2].occupiedBy == " "):
+		if (((oldY - 1 > -1) and self.board[oldY - 1][oldX].occupiedBy == " ") or
+			 ((oldY - 2 > -1) and self.board[oldY - 2][oldX].occupiedBy == " ")):
 			netMoves += 1
 		return netMoves
 
@@ -45,9 +45,10 @@ class Board():
 		blackMoves = 0
 		whiteMoves = 0
 
-		for y in range(0, len(self.board)-1):
-			for x in range(0, len(self.board[y])-1):
-				if self.board[y][x].occupiedBy == 'X' or self.board[y][x].occupiedBy == ' ':
+		for y in range(0, len(self.board)):
+			for x in range(0, len(self.board[y])):
+				if (self.board[y][x].occupiedBy == 'X' or
+					self.board[y][x].occupiedBy == ' '):
 					pass
 				elif self.board[y][x].occupiedBy == '@':
 					blackMoves += self.validMoves(x, y)
