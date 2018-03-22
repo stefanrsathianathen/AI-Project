@@ -23,27 +23,27 @@ class Board():
 		for x in self.board:
 			print(x)
 
-	def validMove(self, oldX, oldY, newX, newY, change):
-		print(oldX, oldY, newX, newY, change)
+	def validMoves(self, oldX, oldY):
+
 		if  7<newX or newX<0:
-			return False 
+			return False
 		if 7<newY or newY<0:
 			return False
-		if (self.board[newX][newY].occupiedBy == " "):
-			return True
-		if (self.board[newX][newY].occupiedBy == self.board[oldX][oldY].occupiedBy ):
-			return self.checkJump(oldX,oldY,newX,newY,change)
-		return False
-	
-	def checkJump(self, oldX, oldY, newX, newY, change):
-		if change == 'z':
-			return False
-		elif change == 'x':
-			difference = newX - oldX
-			return self.validMove(newX,newY, newX+difference,newY,'z')
-		else:
-			difference = newY - oldY
-			return self.validMove(newX,newY, newX, newY+difference,'z')
+
+		netMoves = 0;
+
+		if (self.board[oldX + 1][oldY].occupiedBy == " " or
+			self.board[oldX + 2][oldY].occupiedBy == " "):
+			netMoves += 1;
+		if (self.board[oldX - 1][oldY].occupiedBy == " " or
+			self.board[oldX - 2][oldY].occupiedBy == " "):
+			netMoves += 1;
+		if (self.board[oldX][oldY + 1].occupiedBy == " " or
+			self.board[oldX][oldY + 2].occupiedBy == " "):
+			netMoves += 1;
+		if (self.board[oldX][oldY - 1].occupiedBy == " " or 
+			self.board[oldX][oldY - 2].occupiedBy == " "):
+			netMoves += 1;
 
 	def findNumberOfMoves(self):
 
@@ -55,19 +55,10 @@ class Board():
 				netMoves = 0
 				if self.board[y][x].occupiedBy == 'X' or self.board[y][x].occupiedBy == ' ':
 					pass
+				elif self.board[y][x].occupiedBy == '@':
+					blackMoves += validMoves(x, y)
 				else:
-					if self.validMove(x,y,x+1,y,"x"):
-						netMoves += 1
-					if self.validMove(x,y,x-1,y,"x"):
-						netMoves += 1
-					if self.validMove(x,y,x,y+1,"y"):
-						netMoves += 1
-					if self.validMove(x,y,x,y-1,"y"):
-						netMoves += 1
-				if self.board[y][x].occupiedBy == '@':
-					blackMoves += netMoves
-				else:
-					whiteMoves += netMoves
+					whiteMoves += validMoves(x, y)
 		print(whiteMoves)
 		print(blackMoves)
 
