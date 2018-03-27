@@ -25,3 +25,7 @@ class Cell():
 		temp = self.occupiedBy
 		self.occupiedBy = otherCell.occupiedBy
 		otherCell.occupiedBy = temp
+
+	def removePiece(self):
+		"""Deletes the piece from the board"""
+		self.occupiedBy = " ";

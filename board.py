@@ -63,10 +63,11 @@ class Board():
 			X it will create a piece that lies on top of the cell"""
 		return c.Cell(x, y, occupiedBy)
 
-	# def destorypiece():
-	# 	destorypiec
+	def destorypiece(self, x, y):
+		self.board[y][x].removePiece()
 
 	def move(self, oldX, oldY, newX, newY):
 		'''Moves piece on board'''
 	 #	check if player can move (NEED VALID MOVE)
 		self.board[oldY][oldX].changePiece(self.board[newY][newX])
+		
