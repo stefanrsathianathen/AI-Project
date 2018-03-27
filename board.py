@@ -4,7 +4,8 @@ class Board():
 
 	board = [[],[],[],[],[],[],[],[]]
 	numberofMoves = 0
-
+	whitePieceCount = 0
+	blackPieceCount = 0
 	def __init__(self):
 		pass
 
@@ -15,6 +16,10 @@ class Board():
 		for y in range(0, len(boardInput)):
 			for x in range(0, len(boardInput[y])):
 				self.board[y].append(self.createCell(x, y, boardInput[y][x]))
+				if boardInput[y][x] == "@":
+					self.blackPieceCount += 1
+				elif boardInput[y][x] == "O":
+					self.whitePieceCount += 1
 		self.viewBoard()
 
 
@@ -23,7 +28,7 @@ class Board():
 		for x in self.board:
 			print(x)
 
-	def validMoves(self, oldX, oldY):
+	def validMovesCounter(self, oldX, oldY):
 		netMoves = 0;
 
 		if (((oldX + 1 < 8) and self.board[oldY][oldX + 1].occupiedBy == " ") or
@@ -51,23 +56,49 @@ class Board():
 					self.board[y][x].occupiedBy == ' '):
 					pass
 				elif self.board[y][x].occupiedBy == '@':
-					blackMoves += self.validMoves(x, y)
+					blackMoves += self.validMovesCounter(x, y)
 				else:
-					whiteMoves += self.validMoves(x, y)
+					whiteMoves += self.validMovesCounter(x, y)
 		print(whiteMoves)
 		print(blackMoves)
 
+
+	def validMoves(self,oldX,newX,newY):
+		if newX - oldX > 1:
+			if (((newX < 8) and self.board[newY][newX].occupiedBy == " ") or
+			 ((newX + 1 < 8)  and self.board[newY][newX + 1].occupiedBy == " ")):
+				return True
+		else:
+			if (((newY < 8) and self.board[newY][oldX].occupiedBy == " ") or
+			((oldY + 1 < 8) and self.board[oldY + 1][oldX].occupiedBy == " ")):
+				return True
 
 	def createCell(self, x, y, occupiedBy):
 		"""Creates a cell. If the cell is occupied by a @ or ) or
 			X it will create a piece that lies on top of the cell"""
 		return c.Cell(x, y, occupiedBy)
 
-	def destorypiece(self, x, y):
-		self.board[y][x].removePiece()
+	# def destorypiece():
+	# 	destorypiec
+
+	def jump(self, oldX, oldY, newX, newY):
+		
+
 
 	def move(self, oldX, oldY, newX, newY):
 		'''Moves piece on board'''
 	 #	check if player can move (NEED VALID MOVE)
+	 if abs(newX - oldX) == 2 or abs(newY - oldY) == 2:
+	 	if self.jump(oldX,oldY,newX,newY):
+	 		self.board[oldY][oldX].changePiece(self.board[newY][newX])
+
+
+
+
+	 if self.validMoves(oldX,oldY):
 		self.board[oldY][oldX].changePiece(self.board[newY][newX])
-		
+	 else:
+	 	print("FUCK OFF")
+
+	def destorypiece(self, x, y):
+		self.board[y][x].removePiece()
