@@ -31,17 +31,17 @@ class Board():
 	def validMovesCounter(self, oldX, oldY):
 		netMoves = 0;
 
-		if (((oldX + 1 < 8) and self.board[oldY][oldX + 1].occupiedBy == " ") or
-			 ((oldX + 2 < 8)  and self.board[oldY][oldX + 2].occupiedBy == " ")):
+		if ((self.isValidMove(oldX, oldY, oldX + 1, oldY)) or
+			 (self.isValidMove(oldX, oldY, oldX + 2, oldY))):
 			netMoves += 1
-		if (((oldX - 1 > -1) and self.board[oldY][oldX - 1].occupiedBy == " ") or
-			 ((oldX - 2 > -1) and self.board[oldY][oldX - 2].occupiedBy == " ")):
+		if ((self.isValidMove(oldX, oldY, oldX - 1, oldY)) or
+			 (self.isValidMove(oldX, oldY, oldX - 2, oldY))):
 			netMoves += 1
-		if (((oldY + 1 < 8) and self.board[oldY + 1][oldX].occupiedBy == " ") or
-			((oldY + 2 < 8) and self.board[oldY + 2][oldX].occupiedBy == " ")):
+		if ((self.isValidMove(oldX, oldY, oldX, oldY + 1)) or
+			(self.isValidMove(oldX, oldY, oldX, oldY + 2))):
 			netMoves += 1
-		if (((oldY - 1 > -1) and self.board[oldY - 1][oldX].occupiedBy == " ") or
-			 ((oldY - 2 > -1) and self.board[oldY - 2][oldX].occupiedBy == " ")):
+		if ((self.isValidMove(oldX, oldY, oldX, oldY - 1)) or
+			 (self.isValidMove(oldX, oldY, oldX, oldY - 2))):
 			netMoves += 1
 		return netMoves
 
@@ -62,43 +62,35 @@ class Board():
 		print(whiteMoves)
 		print(blackMoves)
 
-
-	def validMoves(self,oldX,newX,newY):
-		if newX - oldX > 1:
-			if (((newX < 8) and self.board[newY][newX].occupiedBy == " ") or
-			 ((newX + 1 < 8)  and self.board[newY][newX + 1].occupiedBy == " ")):
-				return True
-		else:
-			if (((newY < 8) and self.board[newY][oldX].occupiedBy == " ") or
-			((oldY + 1 < 8) and self.board[oldY + 1][oldX].occupiedBy == " ")):
-				return True
-
 	def createCell(self, x, y, occupiedBy):
 		"""Creates a cell. If the cell is occupied by a @ or ) or
 			X it will create a piece that lies on top of the cell"""
 		return c.Cell(x, y, occupiedBy)
 
-	# def destorypiece():
-	# 	destorypiec
-
-	def jump(self, oldX, oldY, newX, newY):
-		
-
-
 	def move(self, oldX, oldY, newX, newY):
 		'''Moves piece on board'''
-	 #	check if player can move (NEED VALID MOVE)
-	 if abs(newX - oldX) == 2 or abs(newY - oldY) == 2:
-	 	if self.jump(oldX,oldY,newX,newY):
-	 		self.board[oldY][oldX].changePiece(self.board[newY][newX])
+	#	check if player can move (NEED VALID MOVE)
+		if self.isValidMove(oldX, oldY, newX, newY):
+			self.board[oldY][oldX].changePiece(self.board[newY][newX])
 
 
+	def isValidMove(self, oldX, oldY, newX, newY):
 
+		if (oldX > 7 or oldX < 0 or newX > 7 or newX < 0 or
+			oldY > 7 or oldY < 0 or newY > 7 or newY < 0):
+			return False
+		elif (abs(newX - oldX) > 2 or abs (newY - oldY) > 2):
+			return False
 
-	 if self.validMoves(oldX,oldY):
-		self.board[oldY][oldX].changePiece(self.board[newY][newX])
-	 else:
-	 	print("FUCK OFF")
+		if self.board[newY][newX].occupiedBy == " ":
+			return True
+		else:
+			return False
+
 
 	def destorypiece(self, x, y):
+		if (self.board[y][x].occupiedBy == "@"):
+			self.blackPieceCount -= 1
+		elif (self.board[y][x].occupiedBy == "O"):
+			self.whitePieceCount -= 1
 		self.board[y][x].removePiece()

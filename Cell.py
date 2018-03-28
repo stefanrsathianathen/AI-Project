@@ -1,4 +1,3 @@
-import Piece as p
 class Cell():
 	"""docstring for Piece"""
 
