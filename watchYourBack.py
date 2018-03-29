@@ -20,3 +20,4 @@ if (gameName == "Moves"):
     board.findNumberOfMoves()
 #elif (gameName == "Massacre"):
     # do stuff
+board.createTree()

@@ -1,4 +1,5 @@
 import Cell as c
+import tree as t
 class Board():
 	"""docstring for Board"""
 
@@ -6,6 +7,8 @@ class Board():
 	numberofMoves = 0
 	whitePieceCount = 0
 	blackPieceCount = 0
+	tree = t.Tree()
+
 	def __init__(self):
 		pass
 
@@ -94,3 +97,11 @@ class Board():
 		elif (self.board[y][x].occupiedBy == "O"):
 			self.whitePieceCount -= 1
 		self.board[y][x].removePiece()
+
+	def createTree(self):
+		for y in range(0, len(self.board)):
+			for x in range(0, len(self.board[y])):
+				if (self.board[y][x].occupiedBy != 'X' and
+					self.board[y][x].occupiedBy != ' '):
+					self.tree.add(x,y)
+		self.tree.printTree()
