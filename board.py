@@ -147,27 +147,30 @@ class Board():
 
 					xdiff = self.tree.nodes[x].x - closestPieces[j].x
 					ydiff = self.tree.nodes[x].y - closestPieces[j].y
-					print(xdiff, ydiff)
 
 					if (abs(xdiff) <= abs(ydiff)):
 						while (xdiff != 0):
 							if (xdiff < 0):
+								print("("+ str(closestPieces[j].x) + ", " + str(closestPieces[j].y) + ") -> (" + str(closestPieces[j].x - 1) + ", " + str(closestPieces[j].y) + ")")
 								self.move(closestPieces[j].x, closestPieces[j].y,
 								closestPieces[j].x - 1, closestPieces[j].y)
 								xdiff += 1
 								closestPieces[j].x -= 1
 							else:
+								print("("+ str(closestPieces[j].x) + ", " + str(closestPieces[j].y) + ") -> (" + str(closestPieces[j].x + 1) + ", " + str(closestPieces[j].y) + ")")
 								self.move(closestPieces[j].x, closestPieces[j].y,
 								closestPieces[j].x + 1, closestPieces[j].y)
 								xdiff -= 1
 								closestPieces[j].x += 1
 						while (abs(ydiff) != 1):
 							if (ydiff < 1):
+								print("("+ str(closestPieces[j].x) + ", " + str(closestPieces[j].y) + ") -> (" + str(closestPieces[j].x ) + ", " + str(closestPieces[j].y - 1) + ")")
 								self.move(closestPieces[j].x, closestPieces[j].y,
 								closestPieces[j].x, closestPieces[j].y - 1)
 								ydiff += 1
 								closestPieces[j].y -= 1
 							else:
+								print("("+ str(closestPieces[j].x) + ", " + str(closestPieces[j].y) + ") -> (" + str(closestPieces[j].x ) + ", " + str(closestPieces[j].y + 1) + ")")
 								self.move(closestPieces[j].x, closestPieces[j].y,
 								closestPieces[j].x, closestPieces[j].y + 1)
 								ydiff -= 1
@@ -176,22 +179,26 @@ class Board():
 					else:
 						while (ydiff != 0):
 							if (ydiff < 0):
+								print("("+ str(closestPieces[j].x) + ", " + str(closestPieces[j].y) + ") -> (" + str(closestPieces[j].x ) + ", " + str(closestPieces[j].y - 1) + ")")
 								self.move(closestPieces[j].x, closestPieces[j].y,
 								closestPieces[j].x, closestPieces[j].y - 1)
 								ydiff += 1
 								closestPieces[j].y -= 1
 							else:
+								print("("+ str(closestPieces[j].x) + ", " + str(closestPieces[j].y) + ") -> (" + str(closestPieces[j].x ) + ", " + str(closestPieces[j].y + 1) + ")")
 								self.move(closestPieces[j].x, closestPieces[j].y,
 								closestPieces[j].x, closestPieces[j].y + 1)
 								ydiff -= 1
 								closestPieces[j].y += 1
 						while (abs(xdiff) != 1):
 							if (xdiff < 1):
+								print("("+ str(closestPieces[j].x) + ", " + str(closestPieces[j].y) + ") -> (" + str(closestPieces[j].x  - 1) + ", " + str(closestPieces[j].y) + ")")
 								self.move(closestPieces[j].x, closestPieces[j].y,
 								closestPieces[j].x - 1, closestPieces[j].y)
 								xdiff += 1
 								closestPieces[j].x -= 1
 							else:
+								print("("+ str(closestPieces[j].x) + ", " + str(closestPieces[j].y) + ") -> (" + str(closestPieces[j].x  + 1) + ", " + str(closestPieces[j].y) + ")")
 								self.move(closestPieces[j].x, closestPieces[j].y,
 								closestPieces[j].x + 1, closestPieces[j].y)
 								xdiff -= 1
