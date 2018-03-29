@@ -104,4 +104,4 @@ class Board():
 				if (self.board[y][x].occupiedBy != 'X' and
 					self.board[y][x].occupiedBy != ' '):
 					self.tree.add(x,y,self.board[y][x].occupiedBy)
-		self.tree.printTree()
+		self.tree.printD()
