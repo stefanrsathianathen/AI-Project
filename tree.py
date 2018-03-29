@@ -1,4 +1,4 @@
-#Marzuk Amin 
+#Marzuk Amin 824100
 #Stefan Sathianathen 868514
 import math
 class Node():
@@ -22,7 +22,9 @@ class Tree():
 		else:
 			self.nodes.append(Node(x,y,self.calculateWeight(x,y), piece))
 
-	
+
 	def calculateWeight(self, newX, newY):
-		'''Find the distance between the first piece entered into tree and new node'''
-		return math.sqrt(((newX-self.nodes[0].x)**2) + ((newY-self.nodes[0].y)**2))
+		'''Find the distance between the first piece
+			entered into tree and new node'''
+		return math.sqrt(((newX-self.nodes[0].x)**2) +
+							((newY-self.nodes[0].y)**2))

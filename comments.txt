@@ -1,11 +1,36 @@
-Marzuk Amin 
+Marzuk Amin 824100
 Stefan Sathianathen 868514
 
-For calculating the number of available moves, what is the time complexity and space complexity of your program? You should not count the time taken to read the board configuration from input.
 
-The calculate the number of avaiable moves, our time complexity is O(n). Our time complexity is this becuase we go through every cell in the board unitl we find a piece. At this point we check various conditions, these conditions are constant time, thus are negligible in overall time complexity. To our space complexity is yet again O(n) because we store the board once and constantly reference this board using a nested list, which is in constant time.  
+Question 1:
+For calculating the number of available moves, what is the time complexity and
+space complexity of your program? You should not count the time taken to read
+the board configuration from input.
+
+Answer 1:
+To calculate the number of available moves, our time complexity is O(n).
+Our time complexity is this because we go through every cell in the board until
+we find a piece. At this point we check various conditions,
+these conditions are constant time, thus are negligible in overall time complexity.
+To our space complexity is yet again O(n) because we store the board once and
+constantly reference this board using a nested list, which is in constant time.
 
 
 
+Question 2:
+For calculating the sequence of moves to eliminate all enemy pieces,
+how have you modelled  the  problem  as  a  search  problem?
+What  search  algorithm  does  your program use? If applicable,
+what is the branching factor of your search tree? What is the maximum search depth?
+Does your algorithm always return the shortest possible sequence of moves that
+will eliminate all enemy pieces?
 
-For calculating the sequence of moves to eliminate all enemy pieces, how have you modelled  the  problem  as  a  search  problem?  What  search  algorithm  does  your program use? If applicable, what is the branching factor of your search tree? What is the maximum search depth? Does your algorithm always return the shortest possible sequence of moves that will eliminate all enemy pieces?
+Answer 2:
+To eliminate all the black pieces, we first acquire the very first piece on the
+board. We then calculate the Euclidean distance from this piece to all the other
+pieces and add all the pieces to a list. This list is then sorted using the distances
+which allows us to get the nearest two white pieces for every black piece in the
+board. Since a tree is not used, there is no branching factor or search depth
+in this case. Although this algorithm tries to get the closest pieces to eliminate
+the black pieces, its not successful and therefore does not return the shortest
+possible sequence.

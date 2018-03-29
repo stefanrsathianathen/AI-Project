@@ -1,4 +1,4 @@
-#Marzuk Amin 
+#Marzuk Amin 824100
 #Stefan Sathianathen 868514
 class Cell():
 	"""Piece"""
@@ -6,8 +6,6 @@ class Cell():
 	def __init__(self, x, y, occupiedBy):
 		self.x = x
 		self.y = y
-		#check if the piece is ocuppied, if so create that piece
-		#otherwise keep it as a blank cell
 		if(occupiedBy != "-"):
 			self.occupiedBy = occupiedBy
 		else:
