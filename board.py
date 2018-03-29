@@ -144,36 +144,58 @@ class Board():
 				closestPieces = self.findClosestPieces(x)
 
 				for j in range(0,2):
-					xdiff = self.tree.nodes[x].x-closestPieces[j].x
-					ydiff = self.tree.nodes[x].y-closestPieces[j].y
 
-					if (xdiff < ydiff):
+					xdiff = self.tree.nodes[x].x - closestPieces[j].x
+					ydiff = self.tree.nodes[x].y - closestPieces[j].y
+					print(xdiff, ydiff)
+
+					if (abs(xdiff) <= abs(ydiff)):
 						while (xdiff != 0):
-							self.move(closestPieces[j].x, closestPieces[j].y,
-							closestPieces[j].x-1, closestPieces[j].y)
-							self.viewBoard()
-							xdiff = self.tree.nodes[x].x-closestPieces[j].x
-							print(xdiff)
+							if (xdiff < 0):
+								self.move(closestPieces[j].x, closestPieces[j].y,
+								closestPieces[j].x - 1, closestPieces[j].y)
+								xdiff += 1
+								closestPieces[j].x -= 1
+							else:
+								self.move(closestPieces[j].x, closestPieces[j].y,
+								closestPieces[j].x + 1, closestPieces[j].y)
+								xdiff -= 1
+								closestPieces[j].x += 1
 						while (abs(ydiff) != 1):
-							self.move(closestPieces[j].x, closestPieces[j].y,
-							closestPieces[j].x, closestPieces[j].y-1)
-							self.viewBoard()
-							ydiff = self.tree.nodes[x].y-closestPieces[j].y
+							if (ydiff < 1):
+								self.move(closestPieces[j].x, closestPieces[j].y,
+								closestPieces[j].x, closestPieces[j].y - 1)
+								ydiff += 1
+								closestPieces[j].y -= 1
+							else:
+								self.move(closestPieces[j].x, closestPieces[j].y,
+								closestPieces[j].x, closestPieces[j].y + 1)
+								ydiff -= 1
+								closestPieces[j].y += 1
+
 					else:
 						while (ydiff != 0):
-							self.move(closestPieces[j].x, closestPieces[j].y,
-							closestPieces[j].x, closestPieces[j].y-1)
-							self.viewBoard()
-							ydiff = self.tree.nodes[x].y-closestPieces[j].y
+							if (ydiff < 0):
+								self.move(closestPieces[j].x, closestPieces[j].y,
+								closestPieces[j].x, closestPieces[j].y - 1)
+								ydiff += 1
+								closestPieces[j].y -= 1
+							else:
+								self.move(closestPieces[j].x, closestPieces[j].y,
+								closestPieces[j].x, closestPieces[j].y + 1)
+								ydiff -= 1
+								closestPieces[j].y += 1
 						while (abs(xdiff) != 1):
-							self.move(closestPieces[j].x, closestPieces[j].y,
-							closestPieces[j].x-1, closestPieces[j].y)
-							self.viewBoard()
-							xdiff = self.tree.nodes[x].x-closestPieces[j].x
-							print(xdiff)
-
-
-
+							if (xdiff < 1):
+								self.move(closestPieces[j].x, closestPieces[j].y,
+								closestPieces[j].x - 1, closestPieces[j].y)
+								xdiff += 1
+								closestPieces[j].x -= 1
+							else:
+								self.move(closestPieces[j].x, closestPieces[j].y,
+								closestPieces[j].x + 1, closestPieces[j].y)
+								xdiff -= 1
+								closestPieces[j].x += 1
 
 	def findClosestPieces(self, index):
 		closestPieces = []
