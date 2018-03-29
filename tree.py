@@ -1,9 +1,10 @@
 import math
 class Node():
 	"""docstring for Node"""
-	def __init__(self, x, y, weight):
+	def __init__(self, x, y, weight, piece):
 		self.x = x
 		self.y = y
+		self.piece = piece
 		self.l = None
 		self.r = None
 		self.weight = weight
@@ -17,23 +18,23 @@ class Tree():
 	def getRoot(self):
 		return self.root
 
-	def add(self, x,y):
+	def add(self, x,y, piece):
 		if(self.root == None):
-			self.root = Node(x,y,0)
+			self.root = Node(x,y,0,piece)
 		else:
-			self._add(x,y,self.calculateWeight(x,y), self.root)
+			self._add(x,y,self.calculateWeight(x,y), piece, self.root,)
 
-	def _add(self, x, y, val, node):
+	def _add(self, x, y, val, piece, node):
 		if(val < node.weight):
 			if(node.l != None):
-				self._add(x,y,val, node.l)
+				self._add(x,y,val,piece ,node.l)
 			else:
-				node.l = Node(x,y,val)
+				node.l = Node(x,y,val,piece)
 		else:
 			if(node.r != None):
-				self._add(x,y,val, node.r)
+				self._add(x,y,val,piece, node.r)
 			else:
-				node.r = Node(x,y,val)
+				node.r = Node(x,y,val,piece)
 
 	def find(self, val):
 		if(self.root != None):
@@ -56,7 +57,7 @@ class Tree():
 	def _printTree(self, node):
 		if(node != None):
 			self._printTree(node.l)
-			print( str(node.weight )+ "    ")
+			print( str(node.weight )+ node.piece + "    ")
 			self._printTree(node.r)
 
 
