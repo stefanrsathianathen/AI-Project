@@ -1,0 +1,11 @@
+Marzuk Amin 
+Stefan Sathianathen 868514
+
+For calculating the number of available moves, what is the time complexity and space complexity of your program? You should not count the time taken to read the board configuration from input.
+
+The calculate the number of avaiable moves, our time complexity is O(n). Our time complexity is this becuase we go through every cell in the board unitl we find a piece. At this point we check various conditions, these conditions are constant time, thus are negligible in overall time complexity. To our space complexity is yet again O(n) because we store the board once and constantly reference this board using a nested list, which is in constant time.  
+
+
+
+
+For calculating the sequence of moves to eliminate all enemy pieces, how have you modelled  the  problem  as  a  search  problem?  What  search  algorithm  does  your program use? If applicable, what is the branching factor of your search tree? What is the maximum search depth? Does your algorithm always return the shortest possible sequence of moves that will eliminate all enemy pieces?

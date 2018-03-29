@@ -1,5 +1,7 @@
+#Marzuk Amin 
+#Stefan Sathianathen 868514
 class Cell():
-	"""docstring for Piece"""
+	"""Piece"""
 
 	def __init__(self, x, y, occupiedBy):
 		self.x = x

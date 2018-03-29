@@ -1,13 +1,19 @@
+#Marzuk Amin 
+#Stefan Sathianathen 868514
 import Cell as c
 import tree as t
 import math
-class Board():
-	"""docstring for Board"""
 
+class Board():
+	"""Board class"""
+
+	'''game board'''
 	board = [[],[],[],[],[],[],[],[]]
-	numberofMoves = 0
+	'''number of white pieces on board'''
 	whitePieceCount = 0
+	'''number of black pieces on board'''
 	blackPieceCount = 0
+	'''Tree for searching moves'''
 	tree = t.Tree()
 
 	def __init__(self):
@@ -24,15 +30,10 @@ class Board():
 					self.blackPieceCount += 1
 				elif boardInput[y][x] == "O":
 					self.whitePieceCount += 1
-		self.viewBoard()
 
-
-	def viewBoard(self):
-		#to view the board correctly
-		for x in self.board:
-			print(x)
-
+	
 	def validMovesCounter(self, oldX, oldY):
+		'''Count how many valid moves a piece can make given the current board position and return that'''
 		netMoves = 0;
 
 		if ((self.isValidMove(oldX, oldY, oldX + 1, oldY)) or
@@ -49,8 +50,9 @@ class Board():
 			netMoves += 1
 		return netMoves
 
+	
 	def findNumberOfMoves(self):
-
+		'''Calculate the number of total moves the white and black pieces can make without moving anything'''
 		blackMoves = 0
 		whiteMoves = 0
 
@@ -66,14 +68,15 @@ class Board():
 		print(whiteMoves)
 		print(blackMoves)
 
+	
 	def createCell(self, x, y, occupiedBy):
 		"""Creates a cell. If the cell is occupied by a @ or ) or
 			X it will create a piece that lies on top of the cell"""
 		return c.Cell(x, y, occupiedBy)
 
+	
 	def move(self, oldX, oldY, newX, newY):
-		'''Moves piece on board'''
-	#	check if player can move (NEED VALID MOVE)
+		'''Moves piece on board and check if need to elimate pieces, if so elimate them'''
 		if self.isValidMove(oldX, oldY, newX, newY):
 			self.board[oldY][oldX].changePiece(self.board[newY][newX])
 
@@ -88,7 +91,7 @@ class Board():
 
 
 	def isValidMove(self, oldX, oldY, newX, newY):
-
+		'''Check if move is valid and return if okay'''
 		if (oldX > 7 or oldX < 0 or newX > 7 or newX < 0 or
 			oldY > 7 or oldY < 0 or newY > 7 or newY < 0):
 			return False
@@ -102,43 +105,47 @@ class Board():
 
 
 	def destoryPiece(self, x, y):
+		'''Destory the piece if it is no longer needed'''
 		if (self.board[y][x].occupiedBy == "@"):
 			self.blackPieceCount -= 1
 		elif (self.board[y][x].occupiedBy == "O"):
 			self.whitePieceCount -= 1
 		self.board[y][x].removePiece()
 
+	
 	def eliminatePieces(self, x, y, pieceType, opponentPiece):
-
-	    if (self.board[y][x + 1].occupiedBy == opponentPiece and
+		'''Figure out if a piece needs to be elimated by game rules if so elimate the piece'''
+		if (self.board[y][x + 1].occupiedBy == opponentPiece and
 	        self.board[y][x + 2].occupiedBy == pieceType):
-	        self.destoryPiece(x + 1, y)
-	    elif (self.board[y][x - 1].occupiedBy == opponentPiece and
+			self.destoryPiece(x + 1, y)
+		elif (self.board[y][x - 1].occupiedBy == opponentPiece and
 	        self.board[y][x - 2].occupiedBy == pieceType):
-	        self.destoryPiece(x - 1, y)
-	    elif (self.board[y + 1][x].occupiedBy == opponentPiece and
+			self.destoryPiece(x - 1, y)
+		elif (self.board[y + 1][x].occupiedBy == opponentPiece and
 	        self.board[y + 2][x].occupiedBy == pieceType):
-	        self.destoryPiece(x, y + 1)
-	    elif (self.board[y - 1][x].occupiedBy == opponentPiece and
+			self.destoryPiece(x, y + 1)
+		elif (self.board[y - 1][x].occupiedBy == opponentPiece and
 	        self.board[y - 2][x].occupiedBy == pieceType):
-	        self.destoryPiece(x, y - 1)
-	    elif (self.board[y][x + 1].occupiedBy == opponentPiece and
+			self.destoryPiece(x, y - 1)
+		elif (self.board[y][x + 1].occupiedBy == opponentPiece and
 	        self.board[y][x - 1].occupiedBy == opponentPiece):
-	        self.destoryPiece(x, y)
-	    elif (self.board[y + 1][x].occupiedBy == opponentPiece and
+			self.destoryPiece(x, y)
+		elif (self.board[y + 1][x].occupiedBy == opponentPiece and
 	        self.board[y - 1][x].occupiedBy == opponentPiece):
-	        self.destoryPiece(x, y)
+			self.destoryPiece(x, y)
 
+	
 	def createTree(self):
+		'''Create tree with all valid pieces in board'''
 		for y in range(0, len(self.board)):
 			for x in range(0, len(self.board[y])):
 				if (self.board[y][x].occupiedBy != 'X' and
 					self.board[y][x].occupiedBy != ' '):
 					self.tree.add(x,y,self.board[y][x].occupiedBy)
-		self.tree.printD()
 
+	
 	def searchTree(self):
-
+		'''Find and move pieces to elimate all the black pieces on board'''
 		for x in range(0, len(self.tree.nodes)):
 			if (self.tree.nodes[x].piece == "@"):
 				closestPieces = self.findClosestPieces(x)
@@ -204,7 +211,9 @@ class Board():
 								xdiff -= 1
 								closestPieces[j].x += 1
 
+	
 	def findClosestPieces(self, index):
+		'''Find and select the closest pieces to the current piece that we are trying to elimate'''
 		closestPieces = []
 		difference = 1
 
@@ -218,6 +227,3 @@ class Board():
 
 			difference += 1
 		return closestPieces
-
-	def distanceFormula(self,x1,y1,x2,y2):
-		return math.sqrt(((x1-x2)**2) + ((y1-y2)**2))
