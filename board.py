@@ -98,6 +98,27 @@ class Board():
 			self.whitePieceCount -= 1
 		self.board[y][x].removePiece()
 
+	def eliminatePieces(self, x, y, pieceType, opponentPiece):
+
+	    if (self.board[y][x + 1].occupiedBy == opponentPiece and
+	        self.board[y][x + 2].occupiedBy == pieceType):
+	        self.destoryPiece(x + 1, y)
+	    elif (self.board[y][x - 1].occupiedBy == opponentPiece and
+	        self.board[y][x - 2].occupiedBy == pieceType):
+	        self.destoryPiece(x - 1, y)
+	    elif (self.board[y + 1][x].occupiedBy == opponentPiece and
+	        self.board[y + 2][x].occupiedBy == pieceType):
+	        self.destoryPiece(x, y + 1)
+	    elif (self.board[y - 1][x].occupiedBy == opponentPiece and
+	        self.board[y - 2][x].occupiedBy == pieceType):
+	        self.destoryPiece(x, y - 1)
+	    elif (self.board[y][x + 1].occupiedBy == opponentPiece and
+	        self.board[y][x - 1].occupiedBy == opponentPiece):
+	        self.destoryPiece(x, y)
+	    elif (self.board[y + 1][x].occupiedBy == opponentPiece and
+	        self.board[y - 1][x].occupiedBy == opponentPiece):
+	        self.destoryPiece(x, y)
+
 	def createTree(self):
 		for y in range(0, len(self.board)):
 			for x in range(0, len(self.board[y])):
@@ -105,3 +126,25 @@ class Board():
 					self.board[y][x].occupiedBy != ' '):
 					self.tree.add(x,y,self.board[y][x].occupiedBy)
 		self.tree.printD()
+
+	def searchTree(self):
+
+		for x in range(0, len(self.tree.nodes)):
+			if (self.tree.nodes[x].piece == "@"):
+				closestPieces = self.findClosestPieces(x)
+				print(closestPieces)
+
+	def findClosestPieces(self, index):
+		closestPieces = []
+		difference = 1
+
+		while (len(closestPieces) != 2):
+			if (index + difference < len(self.tree.nodes) and
+				self.tree.nodes[index + difference] == "O"):
+				closestPieces.append(self.tree.nodes[index + difference])
+			if (index - difference > 0 and
+				self.tree.nodes[index - difference] == "O"):
+				closestPieces.append(self.tree.nodes[index - difference])
+
+			difference += 1
+		return closestPieces

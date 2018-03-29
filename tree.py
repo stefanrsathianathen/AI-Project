@@ -5,17 +5,15 @@ class Node():
 		self.x = x
 		self.y = y
 		self.piece = piece
-		self.l = None
-		self.r = None
 		self.weight = weight
-		
+
 class Tree():
 	"""docstring for Tree"""
 	def __init__(self):
 		self.nodes = []
 
 	#From Stack overflow https://stackoverflow.com/questions/2598437/how-to-implement-a-binary-tree
-	
+
 
 	def add(self, x,y, piece):
 		if(len(self.nodes) == 0):

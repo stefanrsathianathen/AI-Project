@@ -21,3 +21,5 @@ if (gameName == "Moves"):
 #elif (gameName == "Massacre"):
     # do stuff
 board.createTree()
+
+board.searchTree()
