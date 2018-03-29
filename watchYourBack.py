@@ -23,3 +23,5 @@ if (gameName == "Moves"):
 board.createTree()
 
 board.searchTree()
+
+board.viewBoard()

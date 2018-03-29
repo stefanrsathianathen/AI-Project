@@ -24,7 +24,7 @@ class Tree():
 	def printD(self):
 		self.nodes.sort(key=lambda x: x.weight, reverse=False)
 		for x in self.nodes:
-			print(x.weight)
+			print(x.piece)
 
 
 	def calculateWeight(self, newX, newY):

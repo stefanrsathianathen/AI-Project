@@ -1,5 +1,6 @@
 import Cell as c
 import tree as t
+import math
 class Board():
 	"""docstring for Board"""
 
@@ -76,6 +77,15 @@ class Board():
 		if self.isValidMove(oldX, oldY, newX, newY):
 			self.board[oldY][oldX].changePiece(self.board[newY][newX])
 
+		pieceType = self.board[newY][newX].__str__()
+
+		if pieceType == "O":
+			opponentPiece = "@"
+		else:
+			opponentPiece = "O"
+
+		self.eliminatePieces(newX,newY,pieceType,opponentPiece)
+
 
 	def isValidMove(self, oldX, oldY, newX, newY):
 
@@ -91,7 +101,7 @@ class Board():
 			return False
 
 
-	def destorypiece(self, x, y):
+	def destoryPiece(self, x, y):
 		if (self.board[y][x].occupiedBy == "@"):
 			self.blackPieceCount -= 1
 		elif (self.board[y][x].occupiedBy == "O"):
@@ -132,7 +142,20 @@ class Board():
 		for x in range(0, len(self.tree.nodes)):
 			if (self.tree.nodes[x].piece == "@"):
 				closestPieces = self.findClosestPieces(x)
-				print(closestPieces)
+				
+				for j in range(0,2):
+					xdiff = self.tree.nodes[x].x-closestPieces[j].x
+					ydiff = self.tree.nodes[x].y-closestPieces[j].y
+					
+					if xdiff <=1:
+						self.move(closestPieces[j].x, closestPieces[j].y, closestPieces[j].x-1, closestPieces[j].y)
+						self.viewBoard()
+					elif ydiff <= 1:
+						self.move(closestPieces[j].x, closestPieces[j].y, closestPieces[j].x, closestPieces[j].y-1)
+						self.viewBoard()
+				
+
+
 
 	def findClosestPieces(self, index):
 		closestPieces = []
@@ -140,11 +163,14 @@ class Board():
 
 		while (len(closestPieces) != 2):
 			if (index + difference < len(self.tree.nodes) and
-				self.tree.nodes[index + difference] == "O"):
+				self.tree.nodes[index + difference].piece == "O"):
 				closestPieces.append(self.tree.nodes[index + difference])
-			if (index - difference > 0 and
-				self.tree.nodes[index - difference] == "O"):
+			if (index - difference >= 0 and
+				self.tree.nodes[index - difference].piece == "O"):
 				closestPieces.append(self.tree.nodes[index - difference])
 
 			difference += 1
 		return closestPieces
+
+	def distanceFormula(self,x1,y1,x2,y2):
+		return math.sqrt(((x1-x2)**2) + ((y1-y2)**2))
