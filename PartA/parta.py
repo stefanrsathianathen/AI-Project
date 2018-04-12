@@ -1,8 +1,6 @@
-#Marzuk Amin 
+#Marzuk Amin 824100
 #Stefan Sathianathen 868514
 import board as b
-
-
 
 #creates the board
 board = b.Board()
@@ -25,6 +23,3 @@ if (gameName == "Moves"):
 elif (gameName == "Massacre"):
     board.createTree()
     board.searchTree()
-
-
-
