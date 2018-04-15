@@ -1,0 +1,6 @@
+Marzuk Amin 824100
+Stefan Sathianathen 868514
+
+We plan to implment a min-max algorithm at first so if our idea does not work or worse fails, we have something we can turn in.
+
+After implementing a min-max algorithm we plan on developing our own implementing of the Alpha-go approach that google took. We believe that this will take a decent amount of time and will require outside research to complete. Therefore, if we believe that we can not fully implement it we will resort to an algorithm that learns from its previous moves. 
