@@ -48,6 +48,8 @@ class Board():
         for x, y in positions:
             if x > 7 or x < 0 or y > 7 or y < 0:
                 return False
+            if board[y][x] == " ":
+                return False
 
         ''' If a piece tries to jump over another piece '''
         if (abs(positions[1][0] - positions[0][0]) > 2 or
