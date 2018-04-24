@@ -20,3 +20,11 @@ for y in range(0, 8):
         print(myBoard.board[y][x], end = " ")
     print("\n")
 print(myBoard.pieces)
+
+myBoard.shrink_board()
+
+for y in range(0, 8):
+    for x in range (0, 8):
+        print(myBoard.board[y][x], end = " ")
+    print("\n")
+print(myBoard.pieces)

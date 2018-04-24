@@ -87,33 +87,59 @@ class Board():
 
         # we have now shrunk the board once more!
         self.n_shrinks = s = s + 1
-
+        case = 0
         # replace the corners (and perform corner elimination)
         for corner in [(s, s), (s, 7-s), (7-s, 7-s), (7-s, s)]:
+
             x, y = corner
             piece = self.board[y][x]
             if piece in self.pieces:
                 self.pieces[piece] -= 1
             self.board[y][x] = 'X'
             #self.eliminatePieces(corner[0], corner[1],)
+            self.eliminateCorners(corner,case)
+            case+=1
+
+    def eliminateCorners(self,corner,case):
+    	x,y = corner
+    	if case == 0:
+    		if (self.board[y][x+1] != '-' and self.board[y][x+2] != '-' and  self.board[y][x+1] != self.board[y][x+2]):
+    			self.destoryPiece((x + 1, y))
+    		if (self.board[y+1][x] != '-' and self.board[y+2][x] != '-' and  self.board[y+1][x] != self.board[y+2][x]):
+    			self.destoryPiece((x , y + 1))
+    	if case == 3:
+    		if (self.board[y][x-1] != '-' and self.board[y][x-2] != '-' and  self.board[y][x-1] != self.board[y][x-2]):
+    			self.destoryPiece((x - 1, y))
+    		if (self.board[y+1][x] != '-' and self.board[y+2][x] != '-' and  self.board[y+1][x] != self.board[y+2][x]):
+    			self.destoryPiece((x , y + 1))
+    	if case == 1:
+    		if (self.board[y][x+1] != '-' and self.board[y][x+2] != '-' and  self.board[y][x+1] != self.board[y][x+2]):
+    			self.destoryPiece((x + 1, y))
+    		if (self.board[y-1][x] != '-' and self.board[y-2][x] != '-' and  self.board[y-1][x] != self.board[y-2][x]):
+    			self.destoryPiece((x , y - 1))
+    	if case == 2:
+    		if (self.board[y][x-1] != '-' and self.board[y][x-2] != '-' and  self.board[y][x-1] != self.board[y][x-2]):
+    			self.destoryPiece((x - 1, y))
+    		if (self.board[y-1][x] != '-' and self.board[y-2][x] != '-' and  self.board[y-1][x] != self.board[y-2][x]):
+    			self.destoryPiece((x , y - 1))
 
     def eliminatePieces(self, x, y, pieceType, opponentPiece):
         '''Figure out if a piece needs to be eliminated
 			by game rules if so eliminate the piece'''
         if ((x + 2 < 8) and self.board[y][x + 1] == opponentPiece and
-	        (self.board[y][x + 2] == pieceType or self.board[y][x + 2] == "X")):
+	        (self.board[y][x + 2] == pieceType or self.board[y][x + 1] == "X")):
             self.destoryPiece((x + 1, y))
         elif ((x - 2 >= 0) and self.board[y][x - 1] == opponentPiece
 			and (self.board[y][x - 2] == pieceType or
-			self.board[y][x -2] == "X")):
+			self.board[y][x -1] == "X")):
             self.destoryPiece((x - 1, y))
         elif ((y + 2 < 8) and self.board[y + 1][x] == opponentPiece
 			and (self.board[y + 2][x] == pieceType or
-			self.board[y + 2][x] == "X")):
+			self.board[y + 1][x] == "X")):
             self.destoryPiece((x, y + 1))
         elif ((y - 2 >= 0) and self.board[y - 1][x] == opponentPiece
 			and (self.board[y - 2][x] == pieceType or
-			self.board[y - 2][x] == "X")):
+			self.board[y - 1][x] == "X")):
             self.destoryPiece((x, y - 1))
         elif ((x + 1 < 8) and (x - 1 >= 0) and
 			self.board[y][x + 1] == opponentPiece and
