@@ -12,22 +12,31 @@ class Player():
         self.opponentColour = "black" if self.myColour == "white" else "white"
         self.piece = "B" if self.myColour == "black" else "W"
 
+        if self.myColour == "white":
+            for x in range(0, 8):
+                self.board.placeBanList.append((x, 6))
+                self.board.placeBanList.append((x, 7))
+        else:
+            for x in range(0, 8):
+                self.board.placeBanList.append((x, 0))
+                self.board.placeBanList.append((x, 1))
+
     ''' decide the next action '''
     def action(self, turns):
         if turns == 128 or turns == 192:
             self.board.shrinkboard()
 
+        if turns <= 24:
+            self.placeAPiece()
+
         parentNode = g.GameNode(self.board)
 
         for x in range(0,len(self.board)):
             for y in range(0,len(self.board)):
-                if self.board[y][x] = self.piece:
+                if self.board[y][x] == self.piece:
                     states = self.gameStates(x,y)
                     for state in states:
                         parentNode.addChild(state.defineParent(parentNode))
-
-
-
 
 
     ''' receive the opponent's action '''
@@ -77,3 +86,39 @@ class Player():
             else:
                 moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y-2))))
         return moves
+
+    def placeAPiece(self):
+
+        ''' Checks if there is any adjacent opponent piece for our pieces
+            and then places a piece in the opposite end to eliminate it '''
+        for y in range(0, 8):
+            for x in range(0, 8):
+                if board.board[y][x] == self.myColour:
+                    for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+                        if board.board[y + dy][x + dx] == self.opponentColour \
+                        and board.board[y + dy +dy][x + dx + dx] == "-" \
+                        and (x + dx + dx, y + dy + dy) not in self.placeBanList:
+                            board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
+                            self.placeBanList.append((x + dx + dx, y + dy + dy))
+                            return
+
+        ''' Gets 2 random integers and places a piece if there is no
+            adjacent opponent pieces '''
+        while True:
+            x = randint(0, 7)
+            y = randint(0, 5)
+            dangerPlace = False
+            for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+                try:
+                    if board.board[y+dy][x+dx] == self.opponentColour or board.board[y+dy][x+dx] == "X":
+                        dangerPlace = True
+                        break
+                except IndexError:
+                    continue
+            if dangerPlace:
+                continue
+
+            if (x, y) not in board.placeBanList:
+                board.placePiece((x, y), self.myColour)
+                board.placeBanList.append((x, y))
+                break
