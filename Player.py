@@ -31,7 +31,7 @@ class Player():
                     if gameState.board[y][x] != self.piece and gameState.board[y][x]:
                         opponentStates = self.gameStates(x,y)
                         for state in states:
-                            gameState.addChild(state.defineParent(parentNode))
+                            gameState.addChild(state.defineParent(gameState))
 
 
     
