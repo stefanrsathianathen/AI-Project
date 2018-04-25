@@ -7,19 +7,24 @@ class Board():
             x, y = square
             self.board[y][x] = 'X'
 
-        self.pieces = {"W" : 0, "B" : 0}
+        self.pieces = {"white" : 0, "black" : 0}
         self.n_shrinks = 0
         self.n_turns = 0
+        self.placeBanList = [(0,0), (7,0), (0, 7), (7, 7)]
 
     def placePiece(self, place, colour):
 
         x, y = place
         if colour == "white":
             self.board[y][x] = "W"
-            self.pieces["W"] += 1
+            self.placeBanList.append((x, y))
+            self.pieces["white"] += 1
+            self.eliminatePieces(x, y, "W", "B")
         elif colour == "black":
             self.board[y][x] = "B"
-            self.pieces["B"] += 1
+            self.placeBanList.append((x, y))
+            self.pieces["black"] += 1
+            self.eliminatePieces(x, y, "B", "W")
 
     def move(self, positions):
         '''Moves piece on board and check if need to elimate pieces,
@@ -48,6 +53,8 @@ class Board():
         for x, y in positions:
             if x > 7 or x < 0 or y > 7 or y < 0:
                 return False
+            if self.board[y][x] == " ":
+                return False
 
         ''' If a piece tries to jump over another piece '''
         if (abs(positions[1][0] - positions[0][0]) > 2 or
@@ -63,10 +70,14 @@ class Board():
     def destoryPiece(self, position):
         '''Destory the piece if it is no longer needed'''
         if (self.board[position[1]][position[0]] == "B"):
-            self.pieces["B"] -= 1
+            self.pieces["black"] -= 1
         elif (self.board[position[1]][position[0]] == "W"):
-            self.pieces["W"] -= 1
+            self.pieces["white"] -= 1
         self.board[position[1]][position[0]] = "-"
+        try:
+            self.placeBanList.remove((position[0], position[1]))
+        except ValueError:
+            pass
 
     def shrink_board(self):
         """
@@ -94,32 +105,19 @@ class Board():
             if piece in self.pieces:
                 self.pieces[piece] -= 1
             self.board[y][x] = 'X'
-            #self.eliminatePieces(corner[0], corner[1],)
-            self.eliminateCorners(corner,case)
+            self.eliminateCorners(corner)
             case+=1
 
-    def eliminateCorners(self,corner,case):
-    	x,y = corner
-    	if case == 0:
-    		if (self.board[y][x+1] != '-' and self.board[y][x+2] != '-' and  self.board[y][x+1] != self.board[y][x+2]):
-    			self.destoryPiece((x + 1, y))
-    		if (self.board[y+1][x] != '-' and self.board[y+2][x] != '-' and  self.board[y+1][x] != self.board[y+2][x]):
-    			self.destoryPiece((x , y + 1))
-    	if case == 3:
-    		if (self.board[y][x-1] != '-' and self.board[y][x-2] != '-' and  self.board[y][x-1] != self.board[y][x-2]):
-    			self.destoryPiece((x - 1, y))
-    		if (self.board[y+1][x] != '-' and self.board[y+2][x] != '-' and  self.board[y+1][x] != self.board[y+2][x]):
-    			self.destoryPiece((x , y + 1))
-    	if case == 1:
-    		if (self.board[y][x+1] != '-' and self.board[y][x+2] != '-' and  self.board[y][x+1] != self.board[y][x+2]):
-    			self.destoryPiece((x + 1, y))
-    		if (self.board[y-1][x] != '-' and self.board[y-2][x] != '-' and  self.board[y-1][x] != self.board[y-2][x]):
-    			self.destoryPiece((x , y - 1))
-    	if case == 2:
-    		if (self.board[y][x-1] != '-' and self.board[y][x-2] != '-' and  self.board[y][x-1] != self.board[y][x-2]):
-    			self.destoryPiece((x - 1, y))
-    		if (self.board[y-1][x] != '-' and self.board[y-2][x] != '-' and  self.board[y-1][x] != self.board[y-2][x]):
-    			self.destoryPiece((x , y - 1))
+    def eliminateCorners(self, corner):
+        x, y = corner
+        for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+            try:
+                if self.board[y+dy][x+dx] != "-" \
+                and self.board[y+dy+dy][x+dx+dx] != "-" \
+                and self.board[y+dy][x+dx] != self.board[y+dy+dy][x+dx+dx]:
+                    self.destoryPiece((x+dx,y+dy))
+            except IndexError:
+                continue
 
     def eliminatePieces(self, x, y, pieceType, opponentPiece):
         '''Figure out if a piece needs to be eliminated
