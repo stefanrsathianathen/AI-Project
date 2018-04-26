@@ -23,12 +23,15 @@ class Player():
 
     ''' decide the next action '''
     def action(self, turns):
+        ''' Shrink board if required '''
         if turns == 128 or turns == 192:
             self.board.shrinkboard()
 
+        ''' Placing Phase '''
         if turns <= 24:
-            self.placeAPiece()
+            return self.placeAPiece()
 
+        ''' Moving Phase '''
         parentNode = g.GameNode(self.board)
 
         for x in range(0,len(self.board)):
@@ -44,10 +47,10 @@ class Player():
 
         if action != None:
             if (len(action) == 1):
-                ''' place a piece '''
+                ''' Opponent placed a piece '''
                 self.board.placePiece(action, opponentColour)
             if (len(action) == 2):
-                ''' move a piece '''
+                ''' Opponent moved a piece '''
                 self.board.move(action)
 
         self.board.n_turns += 1
@@ -100,7 +103,7 @@ class Player():
                         and (x + dx + dx, y + dy + dy) not in self.placeBanList:
                             board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
                             self.placeBanList.append((x + dx + dx, y + dy + dy))
-                            return
+                            return ((x + dx + dx, y + dy + dy))
 
         ''' Gets 2 random integers and places a piece if there is no
             adjacent opponent pieces '''
@@ -121,4 +124,5 @@ class Player():
             if (x, y) not in board.placeBanList:
                 board.placePiece((x, y), self.myColour)
                 board.placeBanList.append((x, y))
+                return ((x, y))
                 break
