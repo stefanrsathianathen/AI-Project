@@ -1,6 +1,6 @@
 class GameNode():
 	"""docstring for node"""
-	def __init__(self, Board,value,parent=None):
+	def __init__(self, Board,value=0,parent=None):
 		self.board = Board
 		self.weight = value
 		self.parent = parent
@@ -9,10 +9,12 @@ class GameNode():
 	def addChild(self,childNode):
 		self.children.append(childNode)
 
+	def defineParent(self,parent):
+		self.parent = parent
 
-class GameTree():
+# class GameTree():
 
-	def __init__(self):
-		self.root = None
+# 	def __init__(self):
+# 		self.root = None
 
-	def build_tree(self)
+# 	def build_tree(self)

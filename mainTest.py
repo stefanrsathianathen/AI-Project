@@ -36,33 +36,32 @@ def gameStates(x, y):
     '''create the possible game states for current piece'''
     moves = []
     ''' Move to the right '''
-    if ((myBoard.isValidMove(x, y, x + 1, y)) or
-    (myBoard.isValidMove(x, y, x + 2, y))):
-        if(myBoard[y][x+1] != myBoard[y][x]):
-            moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x+1,y))))
+    if myBoard.isValidMove(((x,y),(x+1,y))) or myBoard.isValidMove(((x,y),(x+2,y))):
+        if(myBoard.board[y][x+1] != myBoard.board[y][x]):
+            moves.append(g.GameNode(myBoard.swapPieces(((x,y),(x+1,y)))))
+            #moves.append(g.GameNode(tmp))
         else:
-            moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x+2,y))))
+            moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x+2,y)))))
     ''' Move to the left '''
-    if ((myBoard.isValidMove(x, y, x - 1, y)) or
-        (myBoard.isValidMove(x, y, x - 2, y))):
-        if(myBoard[y][x-1] != myBoard[y][x]):
-            moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x-1,y))))
+    if myBoard.isValidMove(((x,y),(x-1,y))) or myBoard.isValidMove(((x,y),(x-2,y))):
+        if(myBoard.board[y][x-1] != myBoard.board[y][x]):
+            moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x-1,y)))))
         else:
-            moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x-2,y))))
+            moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x-2,y)))))
     ''' Move down '''
-    if ((myBoard.isValidMove(x, y, x, y + 1)) or
-            (myBoard.isValidMove(x, y, x, y + 2))):
-        if(myBoard[y+1][x] != myBoard[y][x]):
-            moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y+1))))
+    if myBoard.isValidMove(((x,y),(x,y+1))) or myBoard.isValidMove(((x,y),(x,y+2))):
+        if(myBoard.board[y+1][x] != myBoard.board[y][x]):
+            moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x,y+1)))))
         else:
-            moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y+2))))
+            moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x,y+2)))))
     ''' Move up '''
-    if ((myBoard.isValidMove(x, y, x, y - 1)) or
-            (myBoard.isValidMove(x, y, x, y - 2))):
-        if(myBoard[y-1][x] != myBoard[y][x]):
-            moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y-1))))
+    if myBoard.isValidMove(((x,y),(x,y-1))) or myBoard.isValidMove(((x,y),(x,y-2))):
+        if(myBoard.board[y-1][x] != myBoard.board[y][x]):
+            moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x,y-1)))))
         else:
-            moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y-2))))
+           moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x,y-2)))))
+    for l in moves:
+        print(l.board)
     return moves
 
 def main():
@@ -81,12 +80,13 @@ def main():
                 for state in states:
                     parentNode.addChild(state.defineParent(parentNode))
 
-    for gameState in parentNode.children:
-        for x in range(0,len(gameState.board)):
-            for y in range(0,len(gameState.board)):
-                if gameState.board[y][x] != self.piece and gameState.board[y][x]:
-                    opponentStates = self.gameStates(x,y)
-                    for state in states:
-                        gameState.addChild(state.defineParent(gameState))
+    # for gameState in parentNode.children:
+    #     print(gameState)
+        # for x in range(0,len(gameState.board)):
+        #     for y in range(0,len(gameState.board)):
+        #         if gameState.board[y][x] != self.piece and gameState.board[y][x]:
+        #             opponentStates = self.gameStates(x,y)
+        #             for state in states:
+        #                 gameState.addChild(state.defineParent(gameState))
 
 main()

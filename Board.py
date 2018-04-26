@@ -41,7 +41,7 @@ class Board():
 
         self.eliminatePieces(positions[1][0], positions[1][1],
                             pieceType, opponentPiece)
-
+        
     def swapPieces(self, positions):
         temp = self.board[positions[0][1]][positions[0][0]]
         self.board[positions[0][1]][positions[0][0]] = \

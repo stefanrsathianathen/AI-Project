@@ -67,8 +67,8 @@ class Player():
         '''create the possible game states for current piece'''
         moves = []
         ''' Move to the right '''
-        if ((self.board.isValidMove(x, y, x + 1, y)) or
-             (self.board.isValidMove(x, y, x + 2, y))):
+        if ((self.board.isValidMove((x, y), (x + 1, y)) or
+             (self.board.isValidMove((x, y), (x + 2, y)))):
             if(self.board[y][x+1] != self.board[y][x]):
                 moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x+1,y))))
             else:
