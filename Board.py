@@ -12,6 +12,13 @@ class Board():
         self.n_turns = 0
         self.placeBanList = [(0,0), (7,0), (0, 7), (7, 7)]
 
+    def printBoard(self):
+        for y in range(0, 8):
+            for x in range (0, 8):
+                print(self.board[y][x], end = " ")
+            print("\n")
+        print("\n")
+
     def placePiece(self, place, colour):
 
         x, y = place
@@ -41,7 +48,8 @@ class Board():
 
         self.eliminatePieces(positions[1][0], positions[1][1],
                             pieceType, opponentPiece)
-        
+        return self.board
+
     def swapPieces(self, positions):
         temp = self.board[positions[0][1]][positions[0][0]]
         self.board[positions[0][1]][positions[0][0]] = \
