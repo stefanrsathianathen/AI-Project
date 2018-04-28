@@ -12,6 +12,9 @@ class Board():
         self.n_shrinks = 0
         self.n_turns = 0
         self.placeBanList = [(0,0), (7,0), (0, 7), (7, 7)]
+        for x in range(0, 8):
+            self.placeBanList.append((x, 6))
+            self.placeBanList.append((x, 7))
 
     def printBoard(self):
         for y in range(0, 8):
