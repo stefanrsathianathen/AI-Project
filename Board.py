@@ -3,6 +3,7 @@ class Board():
 
     def __init__(self):
         self.board = [['-' for _ in range(8)] for _ in range(8)]
+
         for square in [(0, 0), (7, 0), (7, 7), (0, 7)]:
             x, y = square
             self.board[y][x] = 'X'
@@ -65,9 +66,15 @@ class Board():
                 return False
 
         ''' If a piece tries to jump over another piece '''
-        if (abs(positions[1][0] - positions[0][0]) > 2 or
-                abs (positions[1][1] - positions[0][1]) > 2):
-            return False
+        if (abs(positions[1][0] - positions[0][0]) == 2 or
+                abs (positions[1][1] - positions[0][1]) == 2):
+            dx = int((positions[1][0] - positions[0][0])/2)
+            dy = int((positions[1][1] - positions[0][1])/2)
+            if self.board[positions[0][1] + dy][positions[0][0] + dx] == "W" or\
+                self.board[positions[0][1] + dy][positions[0][0] + dx] == "B":
+                return True
+            else:
+                return False
 
         ''' If the board is empty in the new position, return true '''
         if self.board[positions[1][1]][positions[1][0]] == "-":
