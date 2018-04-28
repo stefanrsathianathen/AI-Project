@@ -48,10 +48,10 @@ class Player():
                         opponentStates = self.gameStates(x,y)
                         for state in states:
                             gameState.addChild(state.defineParent(gameState))
+        return minMax(parentNode).move
 
     ''' receive the opponent's action '''
     def update(self, action):
-
         if action != None:
             if (len(action) == 1):
                 ''' Opponent placed a piece '''
@@ -63,38 +63,37 @@ class Player():
         self.board.n_turns += 1
 
 
-    def gameStates(self, x, y):
+    def gameStates(x, y):
         '''create the possible game states for current piece'''
         moves = []
-        ''' Move to the right '''
-        if ((self.board.isValidMove((x, y), (x + 1, y)) or
-             (self.board.isValidMove((x, y), (x + 2, y)))):
-            if(self.board[y][x+1] != self.board[y][x]):
-                moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x+1,y))))
-            else:
-                moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x+2,y))))
-        ''' Move to the left '''
-        if ((self.board.isValidMove(x, y, x - 1, y)) or
-             (self.board.isValidMove(x, y, x - 2, y))):
-            if(self.board[y][x-1] != self.board[y][x]):
-                moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x-1,y))))
-            else:
-                moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x-2,y))))
-        ''' Move down '''
-        if ((self.board.isValidMove(x, y, x, y + 1)) or
-            (self.board.isValidMove(x, y, x, y + 2))):
-            if(self.board[y+1][x] != self.board[y][x]):
-                moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y+1))))
-            else:
-                moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y+2))))
-        ''' Move up '''
-        if ((self.board.isValidMove(x, y, x, y - 1)) or
-             (self.board.isValidMove(x, y, x, y - 2))):
-            if(self.board[y-1][x] != self.board[y][x]):
-                moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y-1))))
-            else:
-                moves.append(g.GameNode(copy.deepcopy(self.board).move((x,y),(x,y-2))))
+
+        for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
+            try:
+                if self.board.isValidMove(((x, y), (x + dx, y + dy))):
+                    tmpBoard = copy.deepcopy(self.board)
+                    tmpBoard.move(((x, y), (x + dx, y + dy)))
+                    moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
+            except IndexError:
+                continue
         return moves
+
+    def value():
+        return randint(-20,60)
+
+    def minMax(parentNode):
+        for x in parentNode.children:
+            minValue = float('inf')
+            for u in x.children:
+                if u.value < minValue:
+                    minValue = u.value
+            x.value = minValue
+        maxValue = float("-inf")
+        maxNode = None
+        for l in parentNode.children:
+            if l.value > maxValue:
+                maxValue = l.value
+                maxNode = l
+        return maxNode
 
     def placeAPiece(self):
 
@@ -102,12 +101,10 @@ class Player():
             and then places a piece in the opposite end to eliminate it '''
         for y in range(0, 8):
             for x in range(0, 8):
-                if board.board[y][x] == self.myColour:
+                if self.board.board[y][x] == self.myColour:
                     for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
-                        if board.board[y + dy][x + dx] == self.opponentColour \
-                        and board.board[y + dy +dy][x + dx + dx] == "-" \
-                        and (x + dx + dx, y + dy + dy) not in self.placeBanList:
-                            board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
+                        if self.board.board[y + dy][x + dx] == self. opponentColour and self.board.board[y + dy +dy][x + dx + dx] == "-" and (x + dx + dx, y + dy + dy) not in self.placeBanList:
+                            self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
                             self.placeBanList.append((x + dx + dx, y + dy + dy))
                             return ((x + dx + dx, y + dy + dy))
 
@@ -119,7 +116,7 @@ class Player():
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
                 try:
-                    if board.board[y+dy][x+dx] == self.opponentColour or board.board[y+dy][x+dx] == "X":
+                    if self.board.board[y+dy][x+dx] == self.opponentColour or self.board.board[y+dy][x+dx] == "X":
                         dangerPlace = True
                         break
                 except IndexError:
@@ -127,8 +124,8 @@ class Player():
             if dangerPlace:
                 continue
 
-            if (x, y) not in board.placeBanList:
-                board.placePiece((x, y), self.myColour)
-                board.placeBanList.append((x, y))
+            if (x, y) not in self.board.placeBanList:
+                self.board.placePiece((x, y), self.myColour)
+                self.board.placeBanList.append((x, y))
                 return ((x, y))
                 break

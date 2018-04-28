@@ -23,6 +23,7 @@ def gameStates(x, y, rootBoard):
 
 def value():
     return randint(-20,60)
+    
 
 def minMax(parentNode):
     for x in parentNode.children:

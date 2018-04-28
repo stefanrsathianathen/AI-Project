@@ -13,10 +13,3 @@ class GameNode():
 
 	def defineParent(self,psd):
 		self.parent = psd
-
-# class GameTree():
-
-# 	def __init__(self):
-# 		self.root = None
-
-# 	def build_tree(self)
