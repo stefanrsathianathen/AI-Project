@@ -28,7 +28,7 @@ class Player():
             self.board.shrinkboard()
 
         ''' Placing Phase '''
-        if turns <= 24:
+        if turns < 24:
             return self.placeAPiece()
 
         ''' Moving Phase '''
@@ -48,19 +48,19 @@ class Player():
                         opponentStates = self.gameStates(x,y)
                         for state in states:
                             gameState.addChild(state.defineParent(gameState))
-        return minMax(parentNode).move
+        move = minMax(parentNode).move
+        print(move)
+        #return move[0],move[1]
 
     ''' receive the opponent's action '''
     def update(self, action):
         if action != None:
-            if (len(action) == 2):
+
+            if (type(action[0]) == int):
                 ''' Opponent placed a piece '''
                 self.board.placePiece(action, self.opponentColour)
-            if (len(action) > 2):
+            else:
                 ''' Opponent moved a piece '''
-                print("This is action")
-                print(action)
-                print("dsf")
                 self.board.swapPieces(action)
 
         self.board.n_turns += 1
@@ -76,8 +76,10 @@ class Player():
                     tmpBoard = copy.deepcopy(self.board)
                     tmpBoard.move(((x, y), (x + dx, y + dy)))
                     moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
+
             except IndexError:
                 continue
+
         return moves
 
     def value():

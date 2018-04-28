@@ -18,7 +18,6 @@ def gameStates(x, y, rootBoard):
         except IndexError:
             #pass
             continue
-
     return moves
 
 def value():
