@@ -62,27 +62,22 @@ class Board():
 
     def isValidMove(self, positions):
         ''' Check if the positions are within the board size '''
-        print(positions)
-        # print("dafsd")
-        x, y = positions
-        if x > 7 or x < 0 or y > 7 or y < 0:
-            return False
-        if self.board[y][x] == " ":
-            return False
+        for x, y in positions:
+            if x > 7 or x < 0 or y > 7 or y < 0:
+                return False
+            if self.board[y][x] == " ":
+                return False
 
-        try:
-            ''' If a piece tries to jump over another piece '''
-            if (abs(positions[1][0] - positions[0][0]) == 2 or
-                    abs (positions[1][1] - positions[0][1]) == 2):
-                dx = int((positions[1][0] - positions[0][0])/2)
-                dy = int((positions[1][1] - positions[0][1])/2)
-                if self.board[positions[0][1] + dy][positions[0][0] + dx] == "W" or\
-                    self.board[positions[0][1] + dy][positions[0][0] + dx] == "B":
-                    return True
-                else:
-                    return False
-        except TypeError:
-            pass
+        ''' If a piece tries to jump over another piece '''
+        if (abs(positions[1][0] - positions[0][0]) == 2 or
+                abs (positions[1][1] - positions[0][1]) == 2):
+            dx = int((positions[1][0] - positions[0][0])/2)
+            dy = int((positions[1][1] - positions[0][1])/2)
+            if self.board[positions[0][1] + dy][positions[0][0] + dx] == "W" or\
+                self.board[positions[0][1] + dy][positions[0][0] + dx] == "B":
+                return True
+            else:
+                return False
 
         ''' If the board is empty in the new position, return true '''
         if self.board[positions[1][1]][positions[1][0]] == "-":

@@ -53,12 +53,15 @@ class Player():
     ''' receive the opponent's action '''
     def update(self, action):
         if action != None:
-            if (len(action) == 1):
-                ''' Opponent placed a piece '''
-                self.board.placePiece(action, opponentColour)
             if (len(action) == 2):
+                ''' Opponent placed a piece '''
+                self.board.placePiece(action, self.opponentColour)
+            if (len(action) > 2):
                 ''' Opponent moved a piece '''
-                self.board.move(action)
+                print("This is action")
+                print(action)
+                print("dsf")
+                self.board.swapPieces(action)
 
         self.board.n_turns += 1
 
