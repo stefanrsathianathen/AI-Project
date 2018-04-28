@@ -32,56 +32,16 @@ myBoard = b.Board()
 def gameStates(x, y):
     '''create the possible game states for current piece'''
     moves = []
-    ''' Move to the right '''
-    try:
-        if myBoard.isValidMove(((x,y),(x+1,y))) or myBoard.isValidMove(((x,y),(x+2,y))):
-            if(myBoard.board[y][x+1] != myBoard.board[y][x]):
-                
-                moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x+1,y,))),((x,y),(x+1,y))))
+    for dx, dy, dx1, dy1 in [(1, 0, 2, 0),(-1, 0, -2, 0),(0, 1, 0, -2),(0, -1, 0, -2)]:
+        try:
+            if myBoard.isValidMove(((x,y),(x+dx,y+dy))) or myBoard.isValidMove(((x,y),(x+dx1,y+dy1))):
+                if(myBoard.board[y+dy][x+dx] != myBoard.board[y][x]):
+                    moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x+dx,y+dy))),((x,y),(x+dx,y+dy))))
+                else:
+                    moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x+dx1,y+dy1))),((x,y),(x+dx1,y+dy1))))
+        except IndexError:
+            pass
 
-            else:
-                moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x+2,y))),((x,y),(x+2,y))))
-
-    except IndexError:
-        pass
-
-    ''' Move to the left '''
-    try:
-        if myBoard.isValidMove(((x,y),(x-1,y))) or myBoard.isValidMove(((x,y),(x-2,y))):
-            if(myBoard.board[y][x-1] != myBoard.board[y][x]):
-                moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x-1,y))),((x,y),(x-1,y))))
-
-            else:
-                moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x-2,y))),((x,y),(x-2,y))))
-
-    except IndexError:
-        pass
-
-    ''' Move down '''
-
-    try:
-        if myBoard.isValidMove(((x,y),(x,y+1))) or myBoard.isValidMove(((x,y),(x,y+2))):
-            if(myBoard.board[y+1][x] != myBoard.board[y][x]):
-                moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x,y+1))),((x,y),(x,y+1))))
-
-            else:
-                moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x,y+2))),((x,y),(x+1,y+2))))
-
-    except IndexError:
-        pass
-
-
-    ''' Move up '''
-    try:
-        if myBoard.isValidMove(((x,y),(x,y-1))) or myBoard.isValidMove(((x,y),(x,y-2))):
-            if(myBoard.board[y-1][x] != myBoard.board[y][x]):
-                moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x,y-1))),((x,y),(x,y-1))))
-
-            else:
-               moves.append(g.GameNode(copy.deepcopy(myBoard).move(((x,y),(x,y-2))),((x,y),(x,y-2))))
-
-    except IndexError:
-        pass
     # for l in moves:
     #     for y in range(0, 8):
     #         for x in range (0, 8):
