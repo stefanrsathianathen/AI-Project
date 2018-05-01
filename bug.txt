@@ -1,10 +1,6 @@
 18 turns into the placing phase
 invalid action (W): player tried to place on an occupied square or corner: (5, 3)
 
-9 turns into the placing phase
-invalid action (B): player's place contained invalid coordinates: (-2, 2)
-
-
 7 turns into the moving phase
 invalid action (B): player tried to move to an occupied square or corner: ((4, 3)) -> ((5, 3))
 

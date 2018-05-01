@@ -26,7 +26,7 @@ class Player():
     def action(self, turns):
         ''' Shrink board if required '''
         if turns == 128 or turns == 192:
-            self.board.shrinkboard()
+            self.board.shrink_board()
 
         ''' Placing Phase '''
         if self.myColour == "white" and self.board.n_turns < 23:
@@ -58,8 +58,10 @@ class Player():
                             state.value = self.value()
                             state.defineParent(gameState)
                             gameState.addChild(state)
+        
         nextMove = self.minMax(parentNode)
         self.board.n_turns += 1
+        self.board.move(nextMove.move)
         #print(move)
         return nextMove.move
 
@@ -70,10 +72,9 @@ class Player():
             if (type(action[0]) == int):
                 ''' Opponent placed a piece '''
                 self.board.placePiece(action, self.opponentColour)
-                self.board.placeBanList.append(action)
             else:
                 ''' Opponent moved a piece '''
-                self.board.swapPieces(action)
+                self.board.move(action)
 
         self.board.n_turns += 1
 
@@ -84,10 +85,13 @@ class Player():
 
         for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
             try:
-                if rootBoard.isValidMove(((x, y), (x + dx, y + dy))):
-                    tmpBoard = deepcopy(rootBoard)
-                    tmpBoard.move(((x, y), (x + dx, y + dy)))
-                    moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
+                if x + dx > 0 and y + dy > 0:
+                    if rootBoard.isValidMove(((x, y), (x + dx, y + dy))) and rootBoard.board[y + dy][x + dx] == "-":
+                        tmpBoard = deepcopy(rootBoard)
+                        tmpBoard.move(((x, y), (x + dx, y + dy)))
+                        moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
+                else:
+                    continue
             except IndexError:
                 continue
         return moves
