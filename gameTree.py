@@ -1,8 +1,8 @@
 class GameNode():
 	"""docstring for node"""
-	def __init__(self, board,move,value=0,parent=None):
+	def __init__(self, board,move = None,value=0,parent=None):
 		self.board = board
-		self.weight = value
+		self.value = value
 		self.parent = parent
 		self.children = []
 		self.move = move

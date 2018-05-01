@@ -1,6 +1,6 @@
 import Board as b
 import gameTree as g
-import copy
+from copy import deepcopy
 from random import randint
 
 class Player():
@@ -11,6 +11,7 @@ class Player():
         self.myColour = colour
         self.opponentColour = "black" if self.myColour == "white" else "white"
         self.piece = "B" if self.myColour == "black" else "W"
+        self.opponentPiece = "W" if self.piece == "B" else "B"
 
         if self.myColour == "white":
             for x in range(0, 8):
@@ -28,29 +29,39 @@ class Player():
             self.board.shrinkboard()
 
         ''' Placing Phase '''
-        if turns < 24:
-            return self.placeAPiece()
+        if self.myColour == "white" and self.board.n_turns < 23:
+            next = self.placeAPiece()
+            self.board.n_turns += 1
+            return next
+        elif self.myColour == "black" and self.board.n_turns < 24:
+            next = self.placeAPiece()
+            self.board.n_turns += 1
+            return next
 
         ''' Moving Phase '''
-        parentNode = g.GameNode(self.board)
+        parentNode = g.GameNode(deepcopy(self.board), None)
 
-        for x in range(0,len(self.board)):
-            for y in range(0,len(self.board)):
-                if self.board[y][x] == self.piece:
-                    states = self.gameStates(x,y)
+        for y in range(0,len(self.board.board)):
+            for x in range(0,len(self.board.board[y])):
+                if self.board.board[y][x] == self.piece:
+                    states = self.gameStates(x, y, self.board)
                     for state in states:
-                        parentNode.addChild(state.defineParent(parentNode))
+                        state.defineParent(parentNode)
+                        parentNode.addChild(state)
 
         for gameState in parentNode.children:
-            for x in range(0,len(gameState.board)):
-                for y in range(0,len(gameState.board)):
-                    if gameState.board[y][x] != self.piece and gameState.board[y][x]:
-                        opponentStates = self.gameStates(x,y)
-                        for state in states:
-                            gameState.addChild(state.defineParent(gameState))
-        move = minMax(parentNode).move
-        print(move)
-        #return move[0],move[1]
+            for y in range(0, len(gameState.board.board)):
+                for x in range(0, len(gameState.board.board[y])):
+                    if gameState.board.board[y][x] == self.opponentPiece:
+                        opponentStates = self.gameStates(x, y, gameState.board)
+                        for state in opponentStates:
+                            state.value = self.value()
+                            state.defineParent(gameState)
+                            gameState.addChild(state)
+        nextMove = self.minMax(parentNode)
+        self.board.n_turns += 1
+        #print(move)
+        return nextMove.move
 
     ''' receive the opponent's action '''
     def update(self, action):
@@ -66,26 +77,24 @@ class Player():
         self.board.n_turns += 1
 
 
-    def gameStates(x, y):
+    def gameStates(self, x, y, rootBoard):
         '''create the possible game states for current piece'''
         moves = []
 
         for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
             try:
-                if self.board.isValidMove(((x, y), (x + dx, y + dy))):
-                    tmpBoard = copy.deepcopy(self.board)
+                if rootBoard.isValidMove(((x, y), (x + dx, y + dy))):
+                    tmpBoard = deepcopy(rootBoard)
                     tmpBoard.move(((x, y), (x + dx, y + dy)))
                     moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
-
             except IndexError:
                 continue
-
         return moves
 
-    def value():
+    def value(self):
         return randint(-20,60)
 
-    def minMax(parentNode):
+    def minMax(self, parentNode):
         for x in parentNode.children:
             minValue = float('inf')
             for u in x.children:
@@ -117,7 +126,11 @@ class Player():
             adjacent opponent pieces '''
         while True:
             x = randint(0, 7)
-            y = randint(0, 5)
+            if self.myColour == "white":
+                y = randint(0, 5)
+            else:
+                y = randint(2, 7)
+                
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
                 try:
