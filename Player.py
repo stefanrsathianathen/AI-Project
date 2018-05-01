@@ -115,12 +115,15 @@ class Player():
             and then places a piece in the opposite end to eliminate it '''
         for y in range(0, 8):
             for x in range(0, 8):
-                if self.board.board[y][x] == self.myColour:
+                if self.board.board[y][x] == self.piece:
                     for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
-                        if self.board.board[y + dy][x + dx] == self. opponentColour and self.board.board[y + dy +dy][x + dx + dx] == "-" and (x + dx + dx, y + dy + dy) not in self.placeBanList:
-                            self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
-                            self.placeBanList.append((x + dx + dx, y + dy + dy))
-                            return ((x + dx + dx, y + dy + dy))
+                        try:
+                            if self.board.board[y + dy][x + dx] == self.opponentPiece and self.board.board[y + dy +dy][x + dx + dx] == "-" and (x + dx + dx, y + dy + dy) not in self.board.placeBanList:
+                                self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
+                                self.board.placeBanList.append((x + dx + dx, y + dy + dy))
+                                return ((x + dx + dx, y + dy + dy))
+                        except IndexError:
+                            continue
 
         ''' Gets 2 random integers and places a piece if there is no
             adjacent opponent pieces '''
@@ -130,7 +133,7 @@ class Player():
                 y = randint(0, 5)
             else:
                 y = randint(2, 7)
-                
+
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
                 try:
