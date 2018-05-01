@@ -120,7 +120,6 @@ class Player():
                         try:
                             if self.board.board[y + dy][x + dx] == self.opponentPiece and self.board.board[y + dy +dy][x + dx + dx] == "-" and (x + dx + dx, y + dy + dy) not in self.board.placeBanList:
                                 self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
-                                self.board.placeBanList.append((x + dx + dx, y + dy + dy))
                                 return ((x + dx + dx, y + dy + dy))
                         except IndexError:
                             continue
@@ -147,6 +146,5 @@ class Player():
 
             if (x, y) not in self.board.placeBanList:
                 self.board.placePiece((x, y), self.myColour)
-                self.board.placeBanList.append((x, y))
                 return ((x, y))
                 break
