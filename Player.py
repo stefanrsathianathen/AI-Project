@@ -25,7 +25,7 @@ class Player():
     ''' decide the next action '''
     def action(self, turns):
         ''' Shrink board if required '''
-        if turns == 128 or turns == 192:
+        if self.board.n_turns == 128 or self.board.n_turns == 192:
             self.board.shrink_board()
 
         ''' Placing Phase '''
@@ -58,11 +58,10 @@ class Player():
                             state.value = self.value()
                             state.defineParent(gameState)
                             gameState.addChild(state)
-        
+
         nextMove = self.minMax(parentNode)
         self.board.n_turns += 1
         self.board.move(nextMove.move)
-        #print(move)
         return nextMove.move
 
     ''' receive the opponent's action '''
@@ -126,7 +125,7 @@ class Player():
                             if self.board.board[y + dy][x + dx] == self.opponentPiece and self.board.board[y + dy +dy][x + dx + dx] == "-" and (x + dx + dx, y + dy + dy) not in self.board.placeBanList:
                                 self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
                                 if x + dx + dx > 0 and y + dy + dy > 0:
-                                    return ((x + dx + dx, y + dy + dy))
+                                    return (x + dx + dx, y + dy + dy)
                                 else:
                                     continue
                         except IndexError:
