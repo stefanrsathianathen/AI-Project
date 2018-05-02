@@ -2,6 +2,7 @@ import Board as b
 import gameTree as g
 from copy import deepcopy
 from random import randint
+from collections import Counter 
 
 class Player():
 
@@ -55,7 +56,7 @@ class Player():
                     if gameState.board.board[y][x] == self.opponentPiece:
                         opponentStates = self.gameStates(x, y, gameState.board)
                         for state in opponentStates:
-                            state.value = self.value()
+                            state.value = self.value(state.board)
                             state.defineParent(gameState)
                             gameState.addChild(state)
 
@@ -95,8 +96,31 @@ class Player():
                 continue
         return moves
 
-    def value(self):
-        return randint(-20,60)
+    def value(self,board):
+        value = 0
+        if board.board.count(self.piece) > board.board.count(self.opponentPiece):
+            value += 1
+        else:
+            value -= 1
+        for x in range(0,len(board.board)):
+            for y in range(0,len(board.board)):
+                if board.board[y][x] == self.piece:
+                    try:
+                        for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+                            try:
+                                if board.board[y + dy][x + dx] == self.piece:
+                                    value -= 1
+                            except IndexError:
+                                continue
+                            try:
+                                if board.board[y + dy][x + dx] == self.opponentPiece:
+                                    value += 5
+                            except IndexError:
+                                continue
+                    except IndexError:
+                        continue
+        return value
+
 
     def minMax(self, parentNode):
         for x in parentNode.children:
@@ -125,6 +149,7 @@ class Player():
                             if self.board.board[y + dy][x + dx] == self.opponentPiece and self.board.board[y + dy +dy][x + dx + dx] == "-" and (x + dx + dx, y + dy + dy) not in self.board.placeBanList:
                                 self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
                                 if x + dx + dx > 0 and y + dy + dy > 0:
+                                    self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
                                     return (x + dx + dx, y + dy + dy)
                                 else:
                                     continue
