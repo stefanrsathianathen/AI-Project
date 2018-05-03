@@ -68,7 +68,7 @@ class Board():
             dx = int((positions[1][0] - positions[0][0])/2)
             dy = int((positions[1][1] - positions[0][1])/2)
             if (self.board[positions[0][1] + dy][positions[0][0] + dx] != "W" or
-                self.board[positions[0][1] + dy][positions[0][0] + dx] != "B"):
+            self.board[positions[0][1] + dy][positions[0][0] + dx] != "B"):
                 return False
 
         ''' If the board is empty in the new position, return true '''
@@ -143,18 +143,18 @@ class Board():
                     continue
 
                 if (self.board[y + dy][x + dx] == opponentPiece and
-                    (self.board[y + dy + dy][x + dx + dx] == pieceType or
-                    self.board[y + dy + dy][x + dx + dx] == "X")):
+                (self.board[y + dy + dy][x + dx + dx] == pieceType or
+                self.board[y + dy + dy][x + dx + dx] == "X")):
                     self.destoryPiece((x + dx, y + dy))
 
             except IndexError:
                 continue
 
         if ((x + 1 < 8) and (x - 1 >= 0) and
-			(self.board[y][x + 1] == opponentPiece or self.board[y][x + 1] == "X") and
-			(self.board[y][x - 1] == opponentPiece or self.board[y][x - 1] == "X")):
+		(self.board[y][x + 1] == opponentPiece or self.board[y][x + 1] == "X") and
+		(self.board[y][x - 1] == opponentPiece or self.board[y][x - 1] == "X")):
             self.destoryPiece((x, y))
         elif ((y + 1 < 8) and (y - 1 >= 0) and
-			(self.board[y + 1][x] == opponentPiece or self.board[y + 1][x] == "X") and
-			(self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
+		(self.board[y + 1][x] == opponentPiece or self.board[y + 1][x] == "X") and
+		(self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
             self.destoryPiece((x, y))
