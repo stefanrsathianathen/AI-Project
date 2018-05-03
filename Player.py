@@ -27,7 +27,7 @@ class Player():
     def action(self, turns):
         ''' Shrink board if required '''
         if (self.board.n_turns == 152 or self.board.n_turns == 153 or
-            self.board.n_turns == 216 or self.board.n_turns == 217):
+        self.board.n_turns == 216 or self.board.n_turns == 217):
             self.board.shrink_board()
             # self.board.printBoard()
 
@@ -155,12 +155,12 @@ class Player():
                         try:
                             board.board[y + dy][x + dx]
                         except IndexError:
-                            value -= 1 
+                            value -= 1
                     if movable:
                         value += 5
-                    else: 
+                    else:
                         value -= 1
-                    #check diagonals 
+                    #check diagonals
                     for dx, dy in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
                         try:
                             # you dont want pieces to close togther
