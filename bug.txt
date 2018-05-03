@@ -10,3 +10,7 @@ invalid action (W): player tried to move from a square it doesn't have a piece o
 129 turns into the moving phase
 invalid action (B): player's move contained invalid coordinates: ((7, 5)) -> ((7, 4))
 winner: W!
+
+8 turns into the moving phase
+invalid action (W): player tried to move to a non-reachable square (a square that is neither adjacent nor opposite an adjacent occupied square): ((1, 4)) -> ((3, 4))
+winner: B!

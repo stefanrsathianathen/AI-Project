@@ -102,7 +102,7 @@ class Board():
                 piece = self.board[y][x]
                 if piece in self.pieces:
                     self.pieces[piece] -= 1
-                self.board[y][x] = ' '
+                self.board[y][x] = '-'
 
         # we have now shrunk the board once more!
         self.n_shrinks = s = s + 1
