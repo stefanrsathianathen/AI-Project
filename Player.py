@@ -104,6 +104,7 @@ class Player():
         return moves
 
     def score(self,board):
+        #check if next move is a death
         value = 0
         if board.board.count(self.piece) > board.board.count(self.opponentPiece):
             value += board.board.count(self.piece)*board.board.count(self.opponentPiece)
