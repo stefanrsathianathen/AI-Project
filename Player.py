@@ -2,7 +2,7 @@ import Board as b
 import gameTree as g
 from copy import deepcopy
 from random import randint
-from collections import Counter 
+from collections import Counter
 
 class Player():
 
@@ -35,12 +35,12 @@ class Player():
         if self.myColour == "white" and self.board.n_turns < 23:
             next = self.placeAPiece()
             self.board.n_turns += 1
-            self.board.printBoard()
+            # self.board.printBoard()
             return next
         elif self.myColour == "black" and self.board.n_turns < 24:
             next = self.placeAPiece()
             self.board.n_turns += 1
-            self.board.printBoard()
+            # self.board.printBoard()
             return next
 
         ''' Moving Phase '''
@@ -67,7 +67,7 @@ class Player():
         nextMove = self.minMax(parentNode)
         self.board.n_turns += 1
         self.board.move(nextMove.move)
-        self.board.printBoard()
+        # self.board.printBoard()
         return nextMove.move
 
     ''' receive the opponent's action '''
@@ -153,6 +153,9 @@ class Player():
                 if self.board.board[y][x] == self.piece:
                     for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
                         try:
+                            if (x + dx + dx) < 0 or (y + dy + dy) < 0:
+                                continue
+
                             if self.board.board[y + dy][x + dx] == self.opponentPiece and self.board.board[y + dy +dy][x + dx + dx] == "-" and (x + dx + dx, y + dy + dy) not in self.board.placeBanList:
                                 self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
                                 if x + dx + dx > 0 and y + dy + dy > 0:
@@ -174,6 +177,9 @@ class Player():
 
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+                if (x + dx) < 0 or (y + dy) < 0:
+                    continue
+
                 try:
                     if self.board.board[y+dy][x+dx] == self.opponentPiece or self.board.board[y+dy][x+dx] == "X":
                         dangerPlace = True
