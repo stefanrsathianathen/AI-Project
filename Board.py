@@ -12,9 +12,6 @@ class Board():
         self.n_shrinks = 0
         self.n_turns = 0
         self.placeBanList = [(0,0), (7,0), (0, 7), (7, 7)]
-        for x in range(0, 8):
-            self.placeBanList.append((x, 6))
-            self.placeBanList.append((x, 7))
 
     def printBoard(self):
         for y in range(0, 8):
@@ -45,10 +42,7 @@ class Board():
 
         pieceType = self.board[positions[1][1]][positions[1][0]]
 
-        if pieceType == "W":
-            opponentPiece = "B"
-        else:
-            opponentPiece = "W"
+        opponentPiece = "B" if pieceType == "W" else "W"
 
         self.eliminatePieces(positions[1][0], positions[1][1],
                             pieceType, opponentPiece)
@@ -140,26 +134,24 @@ class Board():
     def eliminatePieces(self, x, y, pieceType, opponentPiece):
         '''Figure out if a piece needs to be eliminated
 			by game rules if so eliminate the piece'''
-        if ((x + 2 < 8) and self.board[y][x + 1] == opponentPiece and
-	        (self.board[y][x + 2] == pieceType or self.board[y][x + 1] == "X")):
-            self.destoryPiece((x + 1, y))
-        elif ((x - 2 >= 0) and self.board[y][x - 1] == opponentPiece
-			and (self.board[y][x - 2] == pieceType or
-			self.board[y][x -1] == "X")):
-            self.destoryPiece((x - 1, y))
-        elif ((y + 2 < 8) and self.board[y + 1][x] == opponentPiece
-			and (self.board[y + 2][x] == pieceType or
-			self.board[y + 1][x] == "X")):
-            self.destoryPiece((x, y + 1))
-        elif ((y - 2 >= 0) and self.board[y - 1][x] == opponentPiece
-			and (self.board[y - 2][x] == pieceType or
-			self.board[y - 1][x] == "X")):
-            self.destoryPiece((x, y - 1))
-        elif ((x + 1 < 8) and (x - 1 >= 0) and
-			self.board[y][x + 1] == opponentPiece and
-			self.board[y][x - 1] == opponentPiece):
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            try:
+                if ((x + dx + dx) < 0 or (y + dy + dy) < 0):
+                    continue
+
+                if (self.board[y + dy][x + dx] == opponentPiece and
+                    (self.board[y + dy + dy][x + dx + dx] == pieceType or
+                    self.board[y + dy + dy][x + dx + dx] == "X")):
+                    self.destoryPiece((x + dx, y + dy))
+
+            except IndexError:
+                continue
+
+        if ((x + 1 < 8) and (x - 1 >= 0) and
+			(self.board[y][x + 1] == opponentPiece or self.board[y][x + 1] == "X") and
+			(self.board[y][x - 1] == opponentPiece or self.board[y][x - 1] == "X")):
             self.destoryPiece((x, y))
         elif ((y + 1 < 8) and (y - 1 >= 0) and
-			self.board[y + 1][x] == opponentPiece and
-			self.board[y - 1][x] == opponentPiece):
+			(self.board[y + 1][x] == opponentPiece or self.board[y + 1][x] == "X") and
+			(self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
             self.destoryPiece((x, y))
