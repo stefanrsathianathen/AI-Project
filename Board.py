@@ -67,10 +67,8 @@ class Board():
                 abs (positions[1][1] - positions[0][1]) == 2):
             dx = int((positions[1][0] - positions[0][0])/2)
             dy = int((positions[1][1] - positions[0][1])/2)
-            if self.board[positions[0][1] + dy][positions[0][0] + dx] == "W" or\
-                self.board[positions[0][1] + dy][positions[0][0] + dx] == "B":
-                return True
-            else:
+            if (self.board[positions[0][1] + dy][positions[0][0] + dx] != "W" or
+                self.board[positions[0][1] + dy][positions[0][0] + dx] != "B"):
                 return False
 
         ''' If the board is empty in the new position, return true '''
@@ -108,25 +106,30 @@ class Board():
 
         # we have now shrunk the board once more!
         self.n_shrinks = s = s + 1
-        case = 0
+
         # replace the corners (and perform corner elimination)
         for corner in [(s, s), (s, 7-s), (7-s, 7-s), (7-s, s)]:
 
             x, y = corner
             piece = self.board[y][x]
-            if piece in self.pieces:
-                self.pieces[piece] -= 1
+
+            if piece == "W":
+                self.pieces["white"] -= 1
+            elif piece == "B":
+                self.pieces["black"] -= 1
             self.board[y][x] = 'X'
             self.eliminateCorners(corner)
-            case+=1
 
     def eliminateCorners(self, corner):
         x, y = corner
         for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+            if (x + dx + dx) < 0 or (y + dy + dy) < 0:
+                continue
+
             try:
-                if self.board[y+dy][x+dx] != "-" \
-                and self.board[y+dy+dy][x+dx+dx] != "-" \
-                and self.board[y+dy][x+dx] != self.board[y+dy+dy][x+dx+dx]:
+                if (self.board[y+dy][x+dx] != "-"
+                and self.board[y+dy+dy][x+dx+dx] != "-"
+                and self.board[y+dy][x+dx] != self.board[y+dy+dy][x+dx+dx]):
                     self.destoryPiece((x+dx,y+dy))
             except IndexError:
                 continue
