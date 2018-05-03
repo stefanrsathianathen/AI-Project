@@ -25,17 +25,21 @@ class Player():
     ''' decide the next action '''
     def action(self, turns):
         ''' Shrink board if required '''
-        if self.board.n_turns == 128 or self.board.n_turns == 192:
+        if (self.board.n_turns == 152 or self.board.n_turns == 153 or
+            self.board.n_turns == 216 or self.board.n_turns == 217):
             self.board.shrink_board()
+            # self.board.printBoard()
 
         ''' Placing Phase '''
         if self.myColour == "white" and self.board.n_turns < 23:
             next = self.placeAPiece()
             self.board.n_turns += 1
+            self.board.printBoard()
             return next
         elif self.myColour == "black" and self.board.n_turns < 24:
             next = self.placeAPiece()
             self.board.n_turns += 1
+            self.board.printBoard()
             return next
 
         ''' Moving Phase '''
@@ -62,6 +66,7 @@ class Player():
         nextMove = self.minMax(parentNode)
         self.board.n_turns += 1
         self.board.move(nextMove.move)
+        self.board.printBoard()
         return nextMove.move
 
     ''' receive the opponent's action '''
@@ -71,9 +76,11 @@ class Player():
             if (type(action[0]) == int):
                 ''' Opponent placed a piece '''
                 self.board.placePiece(action, self.opponentColour)
+                self.board.printBoard()
             else:
                 ''' Opponent moved a piece '''
                 self.board.move(action)
+                self.board.printBoard()
 
         self.board.n_turns += 1
 
@@ -143,7 +150,7 @@ class Player():
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
                 try:
-                    if self.board.board[y+dy][x+dx] == self.opponentColour or self.board.board[y+dy][x+dx] == "X":
+                    if self.board.board[y+dy][x+dx] == self.opponentPiece or self.board.board[y+dy][x+dx] == "X":
                         dangerPlace = True
                         break
                 except IndexError:
