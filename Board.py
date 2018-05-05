@@ -158,3 +158,29 @@ class Board():
 		(self.board[y + 1][x] == opponentPiece or self.board[y + 1][x] == "X") and
 		(self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
             self.destoryPiece((x, y))
+
+    def notSafe(self, x, y, pieceType, opponentPiece):
+        '''Figure out if a piece needs to be eliminated
+            by game rules if so eliminate the piece'''
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            try:
+                if ((x + dx + dx) < 0 or (y + dy + dy) < 0):
+                    continue
+
+                if (self.board[y + dy][x + dx] == opponentPiece and
+                (self.board[y + dy + dy][x + dx + dx] == pieceType or
+                self.board[y + dy + dy][x + dx + dx] == "X")):
+                    return True 
+
+            except IndexError:
+                continue
+
+        if ((x + 1 < 8) and (x - 1 >= 0) and
+        (self.board[y][x + 1] == opponentPiece or self.board[y][x + 1] == "X") and
+        (self.board[y][x - 1] == opponentPiece or self.board[y][x - 1] == "X")):
+            return True
+        elif ((y + 1 < 8) and (y - 1 >= 0) and
+        (self.board[y + 1][x] == opponentPiece or self.board[y + 1][x] == "X") and
+        (self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
+           return True
+        return False

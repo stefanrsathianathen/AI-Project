@@ -114,18 +114,25 @@ class Player():
             for y in range(0,len(board.board)):
                 if board.board[y][x] == self.piece:
                     #control the very centre of board for longivity
-                    # if x < 2 or x > 5:
-                    #     value -= 10 * x*y
-                    # else:
-                    #     value += 10 * x*y
-                    # if y < 2 or y > 5:
-                    #     value -= 10 * y*x
-                    # else:
-                    #     value += 10 * y*x
+                    if x < 2 or x > 5:
+                        value -= 10 * x*y
+                    else:
+                        value += 10 * x*y
+                    if y < 2 or y > 5:
+                        value -= 10 * y*x
+                    else:
+                        value += 10 * y*x
 
                     movable = True
                     for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
-
+                        #check if piece may be elimated
+                        try:
+                            if board.notSafe(x+dx,y+dx,self.piece, self.opponentPiece):
+                                    value -= 100 * (x + dx) + 50 * (y + dy)
+                            else:
+                                    value += 10 * (x + dx) + 5 * (y + dy)
+                        except IndexError:
+                            pass
                         #not helpful if the same pieces are right next to each other
                         try:
                             if board.board[y + dy][x + dx] == self.piece:
