@@ -115,11 +115,11 @@ class Player():
                 if board.board[y][x] == self.piece:
                     #control the very centre of board for longivity
                     if x < 2 or x > 5:
-                        value -= 10 * x*y
+                        value -= 100 * x*y
                     else:
                         value += 10 * x*y
                     if y < 2 or y > 5:
-                        value -= 10 * y*x
+                        value -= 100 * y*x
                     else:
                         value += 10 * y*x
 
