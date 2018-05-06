@@ -83,7 +83,7 @@ class Board():
             self.pieces["black"] -= 1
         elif (self.board[position[1]][position[0]] == "W"):
             self.pieces["white"] -= 1
-        self.board[position[1]][position[0]] = "-"
+        self.board[position[1]][position[0]] = " "
         try:
             self.placeBanList.remove((position[0], position[1]))
         except ValueError:
@@ -170,7 +170,7 @@ class Board():
                 if (self.board[y + dy][x + dx] == opponentPiece and
                 (self.board[y + dy + dy][x + dx + dx] == pieceType or
                 self.board[y + dy + dy][x + dx + dx] == "X")):
-                    return True 
+                    return True
 
             except IndexError:
                 continue
