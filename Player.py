@@ -149,6 +149,12 @@ class Player():
                         try:
                             if board.board[y + dy][x + dx] == self.opponentPiece:
                                 value += 10 * (x + dx) + 5 * (y + dy)
+                                try:
+                                    if board.board[y + (dy*2)][x + (dx*2)] == self.piece:
+                                        value += 10 * (x + dx) + 5 * (y + dy)
+                                except IndexError:
+                                    pass
+
                         except IndexError:
                             pass
                         #its good if a piece has a valid move after moving
