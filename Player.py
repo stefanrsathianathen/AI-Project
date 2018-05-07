@@ -1,4 +1,4 @@
-import Board as b
+import BoardC as b
 import gameTree as g
 from copy import deepcopy
 from random import randint
@@ -67,7 +67,7 @@ class Player():
         nextMove = self.minMax(parentNode)
         self.board.n_turns += 1
         self.board.move(nextMove.move)
-        # self.board.printBoard()
+        self.board.printBoard()
         return nextMove.move
 
     ''' receive the opponent's action '''
@@ -77,11 +77,11 @@ class Player():
             if (type(action[0]) == int):
                 ''' Opponent placed a piece '''
                 self.board.placePiece(action, self.opponentColour)
-                # self.board.printBoard()
+                self.board.printBoard()
             else:
                 ''' Opponent moved a piece '''
                 self.board.move(action)
-                # self.board.printBoard()
+                self.board.printBoard()
 
         self.board.n_turns += 1
 
@@ -92,8 +92,8 @@ class Player():
 
         for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
             try:
-                if x + dx > 0 and y + dy > 0:
-                    if rootBoard.isValidMove(((x, y), (x + dx, y + dy))) and rootBoard.board[y + dy][x + dx] == "-":
+                if x + dx  > 0 and y + dy  > 0:
+                    if rootBoard.isValidMove(((x, y), (x + dx, y + dy))):
                         tmpBoard = deepcopy(rootBoard)
                         tmpBoard.move(((x, y), (x + dx, y + dy)))
                         moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
@@ -136,7 +136,7 @@ class Player():
                         #not helpful if the same pieces are right next to each other
                         try:
                             if board.board[y + dy][x + dx] == self.piece:
-                                value -= 100 * (x + dx) + 50 * (y + dy)
+                                value += 10 * (x + dx) + 50 * (y + dy)
                         except IndexError:
                             pass
                         #Its good to have control of cells in corners for easy kills
@@ -210,9 +210,25 @@ class Player():
             if l.value > maxValue:
                 maxValue = l.value
                 maxNode = l
+        if maxNode.move == None:
+            maxNode = self.minMax(parentNode)
         return maxNode
 
     def placeAPiece(self):
+
+        # centre = [(3,3),(3,4),(4,3),(4,4)]
+        # for x in centre:
+        #     if self.board.board[x[1]][x[0]] == "-":
+        #         self.board.placePiece(x,self.myColour)
+        #         return (x)
+
+        # for y in range(2,6):
+        #     for x in range(2,6):
+        #         if self.board.board[y][x] =="-":
+        #             self.board.placePiece((x,y),self.myColour)
+        #             return ((x,y))
+       
+
 
         ''' Checks if there is any adjacent opponent piece for our pieces
             and then places a piece in the opposite end to eliminate it '''
@@ -248,7 +264,7 @@ class Player():
                     continue
 
                 try:
-                    if self.board.board[y+dy][x+dx] == self.opponentPiece or self.board.board[y+dy][x+dx] == "X":
+                    if (self.board.board[y+dy][x+dx] == self.opponentPiece or self.board.board[y+dy][x+dx] == "X") and self.board.board[y-dy][x-dx] == "-":
                         dangerPlace = True
                         break
                 except IndexError:
