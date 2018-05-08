@@ -22,7 +22,6 @@ class Player():
             for x in range(0, 8):
                 self.board.placeBanList.append((x, 0))
                 self.board.placeBanList.append((x, 1))
-        self.lastMove = ((0,0),(0,0))
 
     ''' decide the next action '''
     def action(self, turns):
@@ -52,6 +51,8 @@ class Player():
 
         nextMove = self.minMax(parentNode)
         self.board.n_turns += 1
+        if nextMove == None:
+            return (None)
         self.board.move(nextMove.move)
         self.lastMove = nextMove.move
         # self.board.printBoard()
@@ -87,7 +88,9 @@ class Player():
                     if gameState.board.board[y][x] == self.opponentPiece:
                         opponentStates = self.gameStates(x, y, gameState.board)
                         for state in opponentStates:
-                            state.value = self.score(state.board,state.move)
+                            if state == None:
+                                continue
+                            state.value = self.score(state.board)
                             state.defineParent(gameState)
                             gameState.addChild(state)
 
@@ -109,12 +112,9 @@ class Player():
                 continue
         return moves
 
-    def score(self,board,move):
+    def score(self,board):
         #check if next move is a death
         value = 0
-        for x in move:
-            if x in self.lastMove:
-                value -= 1000000 ** x[0]**x[1]
         if board.board.count(self.piece) > board.board.count(self.opponentPiece):
             value += board.board.count(self.piece)**board.board.count(self.opponentPiece)
         else:
@@ -137,7 +137,7 @@ class Player():
                         #check if piece may be elimated
                         try:
                             if board.notSafe(x+dx,y+dx,self.piece, self.opponentPiece):
-                                    value -= 100 * (x + dx) + 50 * (y + dy)
+                                    value -= 10000 * (x + dx) + 50 * (y + dy)
                             else:
                                     value += 10 * (x + dx) + 5 * (y + dy)
                        
@@ -214,11 +214,16 @@ class Player():
             if l.value > maxValue:
                 maxValue = l.value
                 maxNode = l
-        if maxNode.move == None:
-            maxNode = self.minMax(parentNode)
         return maxNode
 
     def placeAPiece(self):
+        # core = [(2,3),(2,4),(2,5),(3,3),(3,4),(3,5),(4,3),(4,4),(4,5)]
+        # for x in core:
+        #     if self.board.board[x[1]][x[0]] == "-":
+        #         self.board.placePiece(x,self.myColour)
+        #         return (x)
+
+
         ''' Checks if there is any adjacent opponent piece for our pieces
             and then places a piece in the opposite end to eliminate it '''
         for y in range(0, 8):
@@ -240,9 +245,14 @@ class Player():
 
         ''' Gets 2 random integers and places a piece if there is no
             adjacent opponent pieces '''
+        counter = 0
         while True:
-            x = randint(2, 6)
+            if counter > 5:
+                x = randint(0,7)
+            else:
+                x = randint(2,6)
             y = randint(2,5)
+            counter += 1
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
                 if (x + dx) < 0 or (y + dy) < 0:
