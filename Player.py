@@ -247,19 +247,22 @@ class Player():
             adjacent opponent pieces '''
         counter = 0
         while True:
-            if counter < 5:
-                x = randint(3, 5)
-                y = randint(3, 5)
-            elif counter > 5 and counter < 15:
-                x = randint(2, 6)
-                y = randint(2, 6)
-            elif counter > 15:
-                if self.myColour == "white":
-                    y = randint(0, 5)
-                else:
-                    y = randint(2, 7)
-                x = randint(0, 7)
-                
+            lowerBound = 3
+            upperBound = 4
+
+            if counter > 5 and counter < 15:
+                lowerBound -= 1
+                upperBound += 1
+            elif counter > 15 and counter < 50:
+                lowerBound -= 1
+                upperBound += 1
+            else:
+                lowerBound = 0
+                upperBound = 7
+
+            x = randint(lowerBound, upperBound)
+            y = randint(lowerBound, upperBound)
+
             counter += 1
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
