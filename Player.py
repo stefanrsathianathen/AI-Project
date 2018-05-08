@@ -140,19 +140,19 @@ class Player():
                                     value -= 10000 * (x + dx) + 50 * (y + dy)
                             else:
                                     value += 10 * (x + dx) + 5 * (y + dy)
-                       
+
                         #not helpful if the same pieces are right next to each other
-                        
+
                             if board.board[y + dy][x + dx] == self.piece:
                                 value += 10 * (x + dx) + 50 * (y + dy)
-                        
+
                         #Its good to have control of cells in corners for easy kills
-                        
+
                             if board.board[y + dy][x + dx] == "X":
                                 value += 10 * (x + dx) + 5 * (y + dy)
-                       
+
                         # Want to move closer to other pieces so you can eliminate them
-                       
+
                             if board.board[y + dy][x + dx] == self.opponentPiece:
                                 value += 10 * (x + dx) + 5 * (y + dy)
                                 try:
@@ -162,7 +162,7 @@ class Player():
                                     pass
                         except IndexError:
                             pass
-                        
+
                         #its good if a piece has a valid move after moving
                         try:
                             if not board.isValidMove(((x, y), (x + dx, y + dy))):
@@ -247,11 +247,19 @@ class Player():
             adjacent opponent pieces '''
         counter = 0
         while True:
-            if counter > 5:
-                x = randint(0,7)
-            else:
-                x = randint(2,6)
-            y = randint(2,5)
+            if counter < 5:
+                x = randint(3, 5)
+                y = randint(3, 5)
+            elif counter > 5 and counter < 15:
+                x = randint(2, 6)
+                y = randint(2, 6)
+            elif counter > 15:
+                if self.myColour == "white":
+                    y = randint(0, 5)
+                else:
+                    y = randint(2, 7)
+                x = randint(0, 7)
+                
             counter += 1
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
