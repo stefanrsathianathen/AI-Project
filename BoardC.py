@@ -66,7 +66,7 @@ class Board():
                 abs (positions[1][1] - positions[0][1]) == 2):
             dx = int((positions[1][0] - positions[0][0])/2)
             dy = int((positions[1][1] - positions[0][1])/2)
-            if (self.board[positions[0][1] + dy][positions[0][0] + dx] != "W" or
+            if (self.board[positions[0][1] + dy][positions[0][0] + dx] != "W" and
             self.board[positions[0][1] + dy][positions[0][0] + dx] != "B"):
                 return False
 

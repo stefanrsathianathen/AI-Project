@@ -22,6 +22,7 @@ class Player():
             for x in range(0, 8):
                 self.board.placeBanList.append((x, 0))
                 self.board.placeBanList.append((x, 1))
+        self.lastMove = ((0,0),(0,0))
 
     ''' decide the next action '''
     def action(self, turns):
@@ -46,28 +47,14 @@ class Player():
         ''' Moving Phase '''
         parentNode = g.GameNode(deepcopy(self.board), None)
 
-        for y in range(0,len(self.board.board)):
-            for x in range(0,len(self.board.board[y])):
-                if self.board.board[y][x] == self.piece:
-                    states = self.gameStates(x, y, self.board)
-                    for state in states:
-                        state.defineParent(parentNode)
-                        parentNode.addChild(state)
+        self.createTree(parentNode)
 
-        for gameState in parentNode.children:
-            for y in range(0, len(gameState.board.board)):
-                for x in range(0, len(gameState.board.board[y])):
-                    if gameState.board.board[y][x] == self.opponentPiece:
-                        opponentStates = self.gameStates(x, y, gameState.board)
-                        for state in opponentStates:
-                            state.value = self.score(state.board)
-                            state.defineParent(gameState)
-                            gameState.addChild(state)
 
         nextMove = self.minMax(parentNode)
         self.board.n_turns += 1
         self.board.move(nextMove.move)
-        self.board.printBoard()
+        self.lastMove = nextMove.move
+        # self.board.printBoard()
         return nextMove.move
 
     ''' receive the opponent's action '''
@@ -77,13 +64,32 @@ class Player():
             if (type(action[0]) == int):
                 ''' Opponent placed a piece '''
                 self.board.placePiece(action, self.opponentColour)
-                self.board.printBoard()
+                # self.board.printBoard()
             else:
                 ''' Opponent moved a piece '''
                 self.board.move(action)
-                self.board.printBoard()
+                # self.board.printBoard()
 
         self.board.n_turns += 1
+
+    def createTree(self,parentNode):
+        for y in range(0,len(parentNode.board.board)):
+                for x in range(0,len(parentNode.board.board[y])):
+                    if self.board.board[y][x] == self.piece:
+                        states = self.gameStates(x,y, parentNode.board)
+                        for state in states:
+                            state.defineParent(parentNode)
+                            parentNode.addChild(state)
+
+        for gameState in parentNode.children:
+            for y in range(0, len(gameState.board.board)):
+                for x in range(0, len(gameState.board.board[y])):
+                    if gameState.board.board[y][x] == self.opponentPiece:
+                        opponentStates = self.gameStates(x, y, gameState.board)
+                        for state in opponentStates:
+                            state.value = self.score(state.board,state.move)
+                            state.defineParent(gameState)
+                            gameState.addChild(state)
 
 
     def gameStates(self, x, y, rootBoard):
@@ -103,25 +109,28 @@ class Player():
                 continue
         return moves
 
-    def score(self,board):
+    def score(self,board,move):
         #check if next move is a death
         value = 0
+        for x in move:
+            if x in self.lastMove:
+                value -= 1000000 ** x[0]**x[1]
         if board.board.count(self.piece) > board.board.count(self.opponentPiece):
-            value += board.board.count(self.piece)*board.board.count(self.opponentPiece)
+            value += board.board.count(self.piece)**board.board.count(self.opponentPiece)
         else:
-            value -= board.board.count(self.piece)*board.board.count(self.opponentPiece)
+            value -= board.board.count(self.piece)**board.board.count(self.opponentPiece)
         for x in range(0,len(board.board)):
             for y in range(0,len(board.board)):
                 if board.board[y][x] == self.piece:
                     #control the very centre of board for longivity
                     if x < 2 or x > 5:
-                        value -= 100 * x*y
+                        value -= 100 * x**y
                     else:
-                        value += 10 * x*y
+                        value += 10 * x**y
                     if y < 2 or y > 5:
-                        value -= 100 * y*x
+                        value -= 100 * y**x
                     else:
-                        value += 10 * y*x
+                        value += 10 * y**x
 
                     movable = True
                     for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
@@ -198,6 +207,7 @@ class Player():
 
 
     def minMax(self, parentNode):
+
         for x in parentNode.children:
             minValue = float('inf')
             for u in x.children:
@@ -215,21 +225,6 @@ class Player():
         return maxNode
 
     def placeAPiece(self):
-
-        # centre = [(3,3),(3,4),(4,3),(4,4)]
-        # for x in centre:
-        #     if self.board.board[x[1]][x[0]] == "-":
-        #         self.board.placePiece(x,self.myColour)
-        #         return (x)
-
-        # for y in range(2,6):
-        #     for x in range(2,6):
-        #         if self.board.board[y][x] =="-":
-        #             self.board.placePiece((x,y),self.myColour)
-        #             return ((x,y))
-       
-
-
         ''' Checks if there is any adjacent opponent piece for our pieces
             and then places a piece in the opposite end to eliminate it '''
         for y in range(0, 8):
@@ -252,12 +247,8 @@ class Player():
         ''' Gets 2 random integers and places a piece if there is no
             adjacent opponent pieces '''
         while True:
-            x = randint(0, 7)
-            if self.myColour == "white":
-                y = randint(0, 5)
-            else:
-                y = randint(2, 7)
-
+            x = randint(2, 6)
+            y = randint(2,5)
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
                 if (x + dx) < 0 or (y + dy) < 0:
