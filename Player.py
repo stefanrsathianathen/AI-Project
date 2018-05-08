@@ -140,22 +140,19 @@ class Player():
                                     value -= 100 * (x + dx) + 50 * (y + dy)
                             else:
                                     value += 10 * (x + dx) + 5 * (y + dy)
-                        except IndexError:
-                            pass
+                       
                         #not helpful if the same pieces are right next to each other
-                        try:
+                        
                             if board.board[y + dy][x + dx] == self.piece:
                                 value += 10 * (x + dx) + 50 * (y + dy)
-                        except IndexError:
-                            pass
+                        
                         #Its good to have control of cells in corners for easy kills
-                        try:
+                        
                             if board.board[y + dy][x + dx] == "X":
                                 value += 10 * (x + dx) + 5 * (y + dy)
-                        except IndexError:
-                            pass
+                       
                         # Want to move closer to other pieces so you can eliminate them
-                        try:
+                       
                             if board.board[y + dy][x + dx] == self.opponentPiece:
                                 value += 10 * (x + dx) + 5 * (y + dy)
                                 try:
@@ -163,9 +160,9 @@ class Player():
                                         value += 10 * (x + dx) + 5 * (y + dy)
                                 except IndexError:
                                     pass
-
                         except IndexError:
                             pass
+                        
                         #its good if a piece has a valid move after moving
                         try:
                             if not board.isValidMove(((x, y), (x + dx, y + dy))):
@@ -182,9 +179,6 @@ class Player():
                             # you dont want pieces to close togther
                             if board.board[y + dy][x + dx] == self.piece:
                                 value -= 100 * (x + dx) + 50 * (y + dy)
-                        except IndexError:
-                            value -= 100 * (x + dx) + 50 * (y + dy)
-                        try:
                             # you could work to elimate this piece
                             if board.board[y + dy][x + dx] == self.opponentPiece:
                                 for dx1, dy1 in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
