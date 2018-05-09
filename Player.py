@@ -1,5 +1,6 @@
 import BoardC as b
 import gameTree as g
+import MiniMax as m
 from copy import deepcopy
 from random import randint
 from collections import Counter
@@ -42,17 +43,21 @@ class Player():
             return self.placeAPiece()
 
         # Moving Phase
-        parentNode = g.GameNode(deepcopy(self.board), None)
-        # Create the game tree
-        self.createTree(parentNode)
+        parentState = g.GameNode(None, None, deepcopy(self.board))
+        # Create the game tree of moves
+        self.createTree(parentState, 0, 2)
+
         # Find the best move using Minimax algorithm
-        nextMove = self.miniMax(parentNode)
+        minimax = m.MiniMax(parentState)
+        nextMove = minimax.minimax(parentState)
+        # nextMove = self.miniMax(parentState)
+
         self.board.n_turns += 1
         if nextMove == None:
-            return (None)
-        self.board.move(nextMove.move)
+            return None
+        self.board.move(nextMove.move[0])
         self.lastMove = nextMove.move
-        return nextMove.move
+        return nextMove.move[0]
 
     def update(self, action):
         """ Receive the opponent's move and update our own board """
@@ -67,44 +72,93 @@ class Player():
 
         self.board.n_turns += 1
 
-    def createTree(self,parentNode):
-        for y in range(0,len(parentNode.board.board)):
-                for x in range(0,len(parentNode.board.board[y])):
-                    if self.board.board[y][x] == self.piece:
-                        states = self.gameStates(x,y, parentNode.board)
-                        for state in states:
-                            state.defineParent(parentNode)
-                            parentNode.addChild(state)
+    def createTree(self, parentState, depth, maxDepth):
+        # Find all possible moves
+        if (depth % 2 == 0):
+            # Max's turn
+            moves = parentState.board.findMoves(self.piece)
+        else:
+            # Min's turn
+            moves = parentState.board.findMoves(self.opponentPiece)
+        # for each move
+        for move in moves:
+            # create a new node using the move and same board
+            childState = g.GameNode([move, parentState.board.move(move)], None, parentState.board)
 
-        for gameState in parentNode.children:
-            for y in range(0, len(gameState.board.board)):
-                for x in range(0, len(gameState.board.board[y])):
-                    if gameState.board.board[y][x] == self.opponentPiece:
-                        opponentStates = self.gameStates(x, y, gameState.board)
-                        for state in opponentStates:
-                            if state == None:
-                                continue
-                            state.value = self.score(state.board)
-                            state.defineParent(gameState)
-                            gameState.addChild(state)
+            # Base Case/ Will return from the recursive calls only if this is true
+            if (depth + 1 == maxDepth):
+                # Calculate the values of the last nodes
+                childState.value = self.score(parentState.board)
+                #undo the move
+                parentState.board.move((childState.move[0][1], childState.move[0][0]), childState.move[1])
+                return
+
+            # Add to the children list
+            parentState.children.append(childState)
+            # recursively call the same function on the child
+            self.createTree(childState, depth + 1, maxDepth)
+            #undo the move before exiting
+            parentState.board.move((childState.move[0][1], childState.move[0][0]), childState.move[1])
+
+        return
 
 
-    def gameStates(self, x, y, rootBoard):
-        """ Create the possible game states for current piece """
-        moves = []
+        # for y in range(0,len(parentState.board.board)):
+        #         for x in range(0,len(parentState.board.board[y])):
+        #             if self.board.board[y][x] == self.piece:
+        #                 states = self.gameStates(x, y, parentState)
+        #                 for state in states:
+        #                     state.defineParent(parentState)
+        #                     parentState.addChild(state)
+        #
+        # for gameState in parentState.children:
+        #     for y in range(0, len(gameState.board.board)):
+        #         for x in range(0, len(gameState.board.board[y])):
+        #             if gameState.board.board[y][x] == self.opponentPiece:
+        #                 opponentStates = self.gameStates(x, y, gameState.board)
+        #                 for state in opponentStates:
+        #                     if state == None:
+        #                         continue
+        #                     state.value = self.score(state.board)
+        #                     state.defineParent(gameState)
+        #                     gameState.addChild(state)
 
-        for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
-            try:
-                if x + dx  > 0 and y + dy  > 0:
-                    if rootBoard.isValidMove(((x, y), (x + dx, y + dy))):
-                        tmpBoard = deepcopy(rootBoard)
-                        tmpBoard.move(((x, y), (x + dx, y + dy)))
-                        moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
-                else:
-                    continue
-            except IndexError:
-                continue
-        return moves
+
+    # def gameStates(self, x, y, rootBoard):
+    #     """ Create the possible game states for current piece """
+    #     moves = []
+    #
+    #     for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
+    #         try:
+    #             if x + dx  > 0 and y + dy  > 0:
+    #                 if rootBoard.isValidMove(((x, y), (x + dx, y + dy))):
+    #                     tmpBoard = deepcopy(rootBoard)
+    #                     tmpBoard.move(((x, y), (x + dx, y + dy)))
+    #                     moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
+    #             else:
+    #                 continue
+    #         except IndexError:
+    #             continue
+    #     return moves
+
+    def miniMax(self, parentState):
+        """ Commence Minimax algorithm of the game tree """
+        # Find the lowest value possible from the terminal nodes
+        for states in parentState.children:
+            minValue = float('inf')
+            for terminalStates in states.children:
+                if terminalStates.value < minValue:
+                    minValue = terminalStates.value
+                    states.value = minValue
+
+                    maxValue = float('-inf')
+                    maxNode = None
+                    # Find the maximum value possible to decide which state to move to.
+                    for gameState in parentState.children:
+                        if gameState.value > maxValue:
+                            maxValue = gameState.value
+                            maxNode = gameState
+                            return maxNode
 
     def score(self, board):
         """ Determines a heuristic value given a certain board state """
@@ -194,24 +248,6 @@ class Player():
         return value
 
 
-    def miniMax(self, parentNode):
-        """ Commence Minimax algorithm of the game tree """
-        # Find the lowest value possible from the terminal nodes
-        for states in parentNode.children:
-            minValue = float('inf')
-            for terminalStates in states.children:
-                if terminalStates.value < minValue:
-                    minValue = terminalStates.value
-            states.value = minValue
-
-        maxValue = float('-inf')
-        maxNode = None
-        # Find the maximum value possible to decide which state to move to.
-        for gameState in parentNode.children:
-            if gameState.value > maxValue:
-                maxValue = gameState.value
-                maxNode = gameState
-        return maxNode
 
     def placeAPiece(self):
         """ Checks if there is any adjacent opponent piece for our pieces

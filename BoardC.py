@@ -1,3 +1,4 @@
+import itertools
 
 class Board():
 
@@ -217,3 +218,27 @@ class Board():
         (self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
            return True
         return False
+
+    def findValidMoves(self, x, y):
+        """ Return valid moves a piece can make given the current board position """
+
+        validMoves = []
+
+        for dx, dy in [(1, 0), (0, 1), (-1, 0), (0, -1), (2, 0), (0, 2), (-2, 0), (0, -2)]:
+            if self.isValidMove(((x, y), (x + dx, y + dy))):
+                validMoves.append(((x, y), (x + dx, y + dy)))
+
+        return validMoves
+
+    def findMoves(self, piece):
+        """ Returns all the moves the white or
+		 	black pieces can make without moving anything """
+
+        moves = []
+
+        for y in range(0, len(self.board)):
+            for x in range(0, len(self.board[y])):
+                if (self.board[y][x] == piece):
+                    moves = list(itertools.chain(moves, self.findValidMoves(x, y)))
+
+        return moves
