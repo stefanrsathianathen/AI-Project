@@ -6,14 +6,17 @@ from collections import Counter
 
 class Player():
 
-    ''' set up the player '''
     def __init__(self, colour):
+        """ Set up the player """
+        # Our own board represaentation
         self.board = b.Board()
+        # Colour and Piece representations
         self.myColour = colour
         self.opponentColour = "black" if self.myColour == "white" else "white"
         self.piece = "B" if self.myColour == "black" else "W"
         self.opponentPiece = "W" if self.piece == "B" else "B"
 
+        # Adding positions to the placeBanList according to the game rules
         if self.myColour == "white":
             for x in range(0, 8):
                 self.board.placeBanList.append((x, 6))
@@ -23,53 +26,44 @@ class Player():
                 self.board.placeBanList.append((x, 0))
                 self.board.placeBanList.append((x, 1))
 
-    ''' decide the next action '''
     def action(self, turns):
-        ''' Shrink board if required '''
-        if (self.board.n_turns == 152 or self.board.n_turns == 153 or
-        self.board.n_turns == 216 or self.board.n_turns == 217):
+        """ Decides the next action """
+
+        # Shrink board if required
+        if (turns == 128 or turns == 129 or turns == 192 or turns == 193):
             self.board.shrink_board()
-            # self.board.printBoard()
 
-        ''' Placing Phase '''
+        # Placing Phase
         if self.myColour == "white" and self.board.n_turns < 23:
-            next = self.placeAPiece()
             self.board.n_turns += 1
-            # self.board.printBoard()
-            return next
+            return self.placeAPiece()
         elif self.myColour == "black" and self.board.n_turns < 24:
-            next = self.placeAPiece()
             self.board.n_turns += 1
-            # self.board.printBoard()
-            return next
+            return self.placeAPiece()
 
-        ''' Moving Phase '''
+        # Moving Phase
         parentNode = g.GameNode(deepcopy(self.board), None)
-
+        # Create the game tree
         self.createTree(parentNode)
-
-
-        nextMove = self.minMax(parentNode)
+        # Find the best move using Minimax algorithm
+        nextMove = self.miniMax(parentNode)
         self.board.n_turns += 1
         if nextMove == None:
             return (None)
         self.board.move(nextMove.move)
         self.lastMove = nextMove.move
-        # self.board.printBoard()
         return nextMove.move
 
-    ''' receive the opponent's action '''
     def update(self, action):
-        if action != None:
+        """ Receive the opponent's move and update our own board """
 
+        if action != None:
+            # Opponent placed a piece
             if (type(action[0]) == int):
-                ''' Opponent placed a piece '''
                 self.board.placePiece(action, self.opponentColour)
-                # self.board.printBoard()
+            # Opponent moved a piece
             else:
-                ''' Opponent moved a piece '''
                 self.board.move(action)
-                # self.board.printBoard()
 
         self.board.n_turns += 1
 
@@ -96,7 +90,7 @@ class Player():
 
 
     def gameStates(self, x, y, rootBoard):
-        '''create the possible game states for current piece'''
+        """ Create the possible game states for current piece """
         moves = []
 
         for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
@@ -112,8 +106,10 @@ class Player():
                 continue
         return moves
 
-    def score(self,board):
-        #check if next move is a death
+    def score(self, board):
+        """ Determines a heuristic value given a certain board state """
+
+        # Check if next move is a death
         value = 0
         if board.board.count(self.piece) > board.board.count(self.opponentPiece):
             value += board.board.count(self.piece)**board.board.count(self.opponentPiece)
@@ -122,7 +118,7 @@ class Player():
         for x in range(0,len(board.board)):
             for y in range(0,len(board.board)):
                 if board.board[y][x] == self.piece:
-                    #control the very centre of board for longivity
+                    # Control the very centre of board for longevity
                     if x < 2 or x > 5:
                         value -= 100 * x**y
                     else:
@@ -134,36 +130,33 @@ class Player():
 
                     movable = True
                     for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
-                        #check if piece may be elimated
                         try:
-                            if board.notSafe(x+dx,y+dx,self.piece, self.opponentPiece):
+                            # Check if piece can get eliminated
+                            if board.notSafe(x + dx, y + dx, self.piece, self.opponentPiece):
                                     value -= 10000 * (x + dx) + 50 * (y + dy)
                             else:
                                     value += 10 * (x + dx) + 5 * (y + dy)
 
-                        #not helpful if the same pieces are right next to each other
-
+                            # Not helpful if the same pieces are next to each other
                             if board.board[y + dy][x + dx] == self.piece:
                                 value += 10 * (x + dx) + 50 * (y + dy)
 
-                        #Its good to have control of cells in corners for easy kills
-
+                            # Good to have control of cells in corners for easy kills
                             if board.board[y + dy][x + dx] == "X":
                                 value += 10 * (x + dx) + 5 * (y + dy)
 
-                        # Want to move closer to other pieces so you can eliminate them
-
+                            # Want to move closer to other pieces so you can eliminate them
                             if board.board[y + dy][x + dx] == self.opponentPiece:
                                 value += 10 * (x + dx) + 5 * (y + dy)
                                 try:
-                                    if board.board[y + (dy*2)][x + (dx*2)] == self.piece:
+                                    if board.board[y + (dy * 2)][x + (dx * 2)] == self.piece:
                                         value += 10 * (x + dx) + 5 * (y + dy)
                                 except IndexError:
                                     pass
                         except IndexError:
                             pass
 
-                        #its good if a piece has a valid move after moving
+                        # Good if a piece has a valid move after moving
                         try:
                             if not board.isValidMove(((x, y), (x + dx, y + dy))):
                                 movable = False
@@ -173,18 +166,19 @@ class Player():
                         value += 10 * (x*y)
                     else:
                         value -= 100 * (x*y)
-                    #check diagonals
+
+                    # Check diagonals
                     for dx, dy in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
                         try:
-                            # you dont want pieces to close togther
+                            # You dont want pieces too close together
                             if board.board[y + dy][x + dx] == self.piece:
                                 value -= 100 * (x + dx) + 50 * (y + dy)
-                            # you could work to elimate this piece
+                            # You could work to eliminate this piece
                             if board.board[y + dy][x + dx] == self.opponentPiece:
                                 for dx1, dy1 in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
-                                    if (x+dx,y+dy) == (dx+dx1,dy+dy1):
+                                    if (x + dx, y + dy) == (dx + dx1, dy + dy1):
                                         continue
-                                    if board.board[dy+dy1][dx+dx1] == self.piece:
+                                    if board.board[dy + dy1][dx + dx1] == self.piece:
                                         value += 10 * (dx + dx1) + 5 * (dy + dy1)
                                     elif board.board[dy+dy1][dx+dx1] == self.opponentPiece:
                                         value -= 100 * (dx + dx1) + 50 * (dy + dy1)
@@ -200,32 +194,29 @@ class Player():
         return value
 
 
-    def minMax(self, parentNode):
-
-        for x in parentNode.children:
+    def miniMax(self, parentNode):
+        """ Commence Minimax algorithm of the game tree """
+        # Find the lowest value possible from the terminal nodes
+        for states in parentNode.children:
             minValue = float('inf')
-            for u in x.children:
-                if u.value < minValue:
-                    minValue = u.value
-            x.value = minValue
-        maxValue = float("-inf")
+            for terminalStates in states.children:
+                if terminalStates.value < minValue:
+                    minValue = terminalStates.value
+            states.value = minValue
+
+        maxValue = float('-inf')
         maxNode = None
-        for l in parentNode.children:
-            if l.value > maxValue:
-                maxValue = l.value
-                maxNode = l
+        # Find the maximum value possible to decide which state to move to.
+        for gameState in parentNode.children:
+            if gameState.value > maxValue:
+                maxValue = gameState.value
+                maxNode = gameState
         return maxNode
 
     def placeAPiece(self):
-        # core = [(2,3),(2,4),(2,5),(3,3),(3,4),(3,5),(4,3),(4,4),(4,5)]
-        # for x in core:
-        #     if self.board.board[x[1]][x[0]] == "-":
-        #         self.board.placePiece(x,self.myColour)
-        #         return (x)
-
-
-        ''' Checks if there is any adjacent opponent piece for our pieces
-            and then places a piece in the opposite end to eliminate it '''
+        """ Checks if there is any adjacent opponent piece for our pieces
+            and then places a piece in the opposite end to eliminate it """
+        # Check if you can eliminate any opponent piece by placing your piece
         for y in range(0, 8):
             for x in range(0, 8):
                 if self.board.board[y][x] == self.piece:
@@ -234,7 +225,9 @@ class Player():
                             if (x + dx + dx) < 0 or (y + dy + dy) < 0:
                                 continue
 
-                            if self.board.board[y + dy][x + dx] == self.opponentPiece and self.board.board[y + dy +dy][x + dx + dx] == "-" and (x + dx + dx, y + dy + dy) not in self.board.placeBanList:
+                            if (self.board.board[y + dy][x + dx] == self.opponentPiece
+                            and self.board.board[y + dy +dy][x + dx + dx] == "-"
+                            and (x + dx + dx, y + dy + dy) not in self.board.placeBanList):
                                 if x + dx + dx > 0 and y + dy + dy > 0:
                                     self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
                                     return (x + dx + dx, y + dy + dy)
@@ -243,13 +236,13 @@ class Player():
                         except IndexError:
                             continue
 
-        ''' Gets 2 random integers and places a piece if there is no
-            adjacent opponent pieces '''
+        # Tries to place a piece on the middle positions of the board first
         counter = 0
         while True:
             lowerBound = 3
             upperBound = 4
-
+            # The range for placing slowly grows outwards
+            # if it cannot find a place at first within a few tries
             if counter > 5 and counter < 15:
                 lowerBound -= 1
                 upperBound += 1
@@ -264,20 +257,25 @@ class Player():
             y = randint(lowerBound, upperBound)
 
             counter += 1
+            # Checks if the piece will get eliminated next turn if we
+            # place a piece in the generated position
             dangerPlace = False
             for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+                # In order to get rid of negative indexing since its annoying
                 if (x + dx) < 0 or (y + dy) < 0:
                     continue
 
                 try:
-                    if (self.board.board[y+dy][x+dx] == self.opponentPiece or self.board.board[y+dy][x+dx] == "X") and self.board.board[y-dy][x-dx] == "-":
+                    if ((self.board.board[y+dy][x+dx] == self.opponentPiece or
+                    self.board.board[y+dy][x+dx] == "X") and
+                    self.board.board[y-dy][x-dx] == "-"):
                         dangerPlace = True
                         break
                 except IndexError:
                     continue
             if dangerPlace:
                 continue
-
+            # Place the piece if the game rules allow it and then return
             if (x, y) not in self.board.placeBanList:
                 self.board.placePiece((x, y), self.myColour)
                 return ((x, y))
