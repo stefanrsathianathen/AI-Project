@@ -244,17 +244,18 @@ class Player():
             # The range for placing slowly grows outwards
             # if it cannot find a place at first within a few tries
             if counter > 5 and counter < 15:
-                lowerBound -= 1
-                upperBound += 1
+                lowerBound = 2
+                upperBound = 5
             elif counter > 15 and counter < 50:
-                lowerBound -= 1
-                upperBound += 1
-            else:
+                lowerBound = 1
+                upperBound = 6
+            elif counter > 50:
                 lowerBound = 0
                 upperBound = 7
 
             x = randint(lowerBound, upperBound)
             y = randint(lowerBound, upperBound)
+            print(x, y)
 
             counter += 1
             # Checks if the piece will get eliminated next turn if we
