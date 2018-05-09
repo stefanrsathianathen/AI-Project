@@ -48,9 +48,11 @@ class Player():
         self.createTree(parentState, 0, 2)
 
         # Find the best move using Minimax algorithm
-        minimax = m.MiniMax(parentState)
-        nextMove = minimax.minimax(parentState)
-        # nextMove = self.miniMax(parentState)
+        # Method 1
+        # minimax = m.MiniMax(parentState)
+        # nextMove = minimax.minimax(parentState)
+        # Method 2
+        nextMove = self.miniMax(parentState)
 
         self.board.n_turns += 1
         if nextMove == None:
