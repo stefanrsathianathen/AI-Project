@@ -1,0 +1,23 @@
+Marzuk Amin 824100
+Stefan Sathianathen 868514
+
+PROJECT PLAN
+
+
+We plan to implement a min-max algorithm at first so if our idea does not work
+or worse fails, we have something we can turn in.
+
+After implementing a min-max algorithm we plan on developing our own algorithm
+implementing of the Alpha-go approach that google took. We believe that this will
+take a decent amount of time and will require outside research to complete.
+Therefore, if we believe that we can not fully implement it we will resort to an
+algorithm that learns from its previous moves.
+
+We plan to meet at least once every week and discuss how to proceed and also how
+much we should finish until our next meeting. We'll write most of the codes during
+our meetings and divide the extra research work amongst us which is required to
+write the codes successfully. Other than that, we'll be in touch through social
+media if it is required.
+
+Since we are both doing Software Modelling and Design(SWEN30006) along with this
+subject, we have an assignment due by the 11th of May for that subject.

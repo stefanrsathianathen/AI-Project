@@ -1,0 +1,373 @@
+import BoardC as b
+import gameTree as g
+from copy import deepcopy
+from random import randint
+from collections import Counter
+
+class Player():
+
+    def __init__(self, colour):
+        """ Set up the player """
+        # Our own board represaentation
+        self.board = b.Board()
+        # Colour and Piece representations
+        self.myColour = colour
+        self.opponentColour = "black" if self.myColour == "white" else "white"
+        self.piece = "B" if self.myColour == "black" else "W"
+        self.opponentPiece = "W" if self.piece == "B" else "B"
+
+        # Adding positions to the placeBanList according to the game rules
+        if self.myColour == "white":
+            for x in range(0, 8):
+                self.board.placeBanList.append((x, 6))
+                self.board.placeBanList.append((x, 7))
+        else:
+            for x in range(0, 8):
+                self.board.placeBanList.append((x, 0))
+                self.board.placeBanList.append((x, 1))
+
+    def action(self, turns):
+        """ Decides the next action """
+
+        # Shrink board if required
+        if (turns == 128 or turns == 129 or turns == 192 or turns == 193):
+            self.board.shrink_board()
+
+        # Placing Phase
+        if self.myColour == "white" and self.board.n_turns < 23:
+            self.board.n_turns += 1
+            return self.placeAPiece()
+        elif self.myColour == "black" and self.board.n_turns < 24:
+            self.board.n_turns += 1
+            return self.placeAPiece()
+
+        # Moving Phase
+        parentNode = g.gameNode()
+        # Create the game tree
+        self.createTree(parentNode,0, 2, deepcopy(self.board))
+
+        # Find the best move using Minimax algorithm
+        # nextMove = self.miniMax(parentNode)
+        nextMove = self.treeSearch(parentNode,2)
+        self.board.n_turns += 1
+        # t
+        self.board.move(nextMove.move[0])
+        return nextMove.move[0]
+
+    def update(self, action):
+        """ Receive the opponent's move and update our own board """
+
+        if action != None:
+            # Opponent placed a piece
+            if (type(action[0]) == int):
+                self.board.placePiece(action, self.opponentColour)
+            # Opponent moved a piece
+            else:
+                self.board.move(action)
+
+        self.board.n_turns += 1
+
+    # def createTree(self,parentNode):
+    #     for y in range(0,len(parentNode.board.board)):
+    #             for x in range(0,len(parentNode.board.board[y])):
+    #                 if self.board.board[y][x] == self.piece:
+    #                     states = self.gameStates(x,y, parentNode.board)
+    #                     for state in states:
+    #                         state.defineParent(parentNode)
+    #                         parentNode.addChild(state)
+
+
+    #     for gameState in parentNode.children:
+    #         for y in range(0, len(parentNode.board.board)):
+    #             for x in range(0, len(parentNode.board.board)):
+    #                 if gameState.board.board[y][x] == self.opponentPiece:
+    #                     opponentStates = self.gameStates(x, y, gameState.board)
+    #                     for state in opponentStates:
+    #                         if state == None:
+    #                             continue
+    #                         state.value = self.score(state.board)
+    #                         state.defineParent(gameState)
+    #                         gameState.addChild(state)
+
+
+    def createTree(self,parentNode,depth,maxdepth,boardcopy):
+        #get all elimatedPieces from moves
+        elimatedPieces = []
+        if depth > 0:
+            #make the parents move
+            elimatedPieces.append(boardcopy.makeAllMoves(parentNode.move))
+
+        if (depth % 2 == 0):
+            # my turn
+            moves = boardcopy.findMoves(self.piece)
+        else:
+            # opponents turn
+            moves = boardcopy.findMoves(self.opponentPiece)
+
+        for move in moves:
+            #create a state with this move and connect it to its parrent
+            childState = g.gameNode(move, parentNode)
+            #connect the parrent node to its child
+            parentNode.addChild(childState)
+            # just another test to make sure that
+            if None not in parentNode.move:
+                childState.addParentMoves(parentNode.move)
+            # Base Case/ Will return from the recursive calls only if this is true
+            if (depth + 1 == maxdepth):
+                elimatedPieces.append(boardcopy.move(move))
+                childState.value = self.score(boardcopy)
+                i = len(elimatedPieces)-1
+                # print(childState.move)
+                for x in childState.move[::-1]:
+                    boardcopy.move(x,childState.move[i])
+                    i-=1
+                return
+
+            i = len(elimatedPieces)-1
+                # print(childState.move)
+            for x in childState.move[::-1]:
+                boardcopy.move(x,childState.move[i])
+                i-=1
+            self.createTree(childState, depth + 1, maxdepth, boardcopy)
+        return
+
+
+
+
+
+
+    def gameStates(self, x, y, rootBoard):
+        """ Create the possible game states for current piece """
+        moves = []
+
+        for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
+            try:
+                if x + dx  > 0 and y + dy  > 0:
+                    if rootBoard.isValidMove(((x, y), (x + dx, y + dy))):
+                        # tmpBoard = deepcopy(rootBoard)
+                        # tmpBoard.move(((x, y), (x + dx, y + dy)))
+                        moves.append(g.gameNode(((x, y), (x + dx, y + dy))))
+                        # moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
+                else:
+                    continue
+            except IndexError:
+                continue
+        return moves
+
+    def score(self, board):
+        """ Determines a heuristic value given a certain board state """
+
+        # Check if next move is a death
+        value = 0
+        if board.board.count(self.piece) > board.board.count(self.opponentPiece):
+            value += board.board.count(self.piece)**board.board.count(self.opponentPiece)
+        else:
+            value -= board.board.count(self.piece)**board.board.count(self.opponentPiece)
+        for x in range(0,len(board.board)):
+            for y in range(0,len(board.board)):
+                if board.board[y][x] == self.piece:
+                    # Control the very centre of board for longevity
+                    if x < 2 or x > 5:
+                        value -= 100 * x**y
+                    else:
+                        value += 10 * x**y
+                    if y < 2 or y > 5:
+                        value -= 100 * y**x
+                    else:
+                        value += 10 * y**x
+
+                    movable = True
+                    for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+                        try:
+                            # Check if piece can get eliminated
+                            if board.notSafe(x + dx, y + dx, self.piece, self.opponentPiece):
+                                    value -= 10000 * (x + dx) + 50 * (y + dy)
+                            else:
+                                    value += 10 * (x + dx) + 5 * (y + dy)
+
+                            # Not helpful if the same pieces are next to each other
+                            if board.board[y + dy][x + dx] == self.piece:
+                                value += 10 * (x + dx) + 50 * (y + dy)
+
+                            # Good to have control of cells in corners for easy kills
+                            if board.board[y + dy][x + dx] == "X":
+                                value += 10 * (x + dx) + 5 * (y + dy)
+
+                            # Want to move closer to other pieces so you can eliminate them
+                            if board.board[y + dy][x + dx] == self.opponentPiece:
+                                value += 10 * (x + dx) + 5 * (y + dy)
+                                try:
+                                    if board.board[y + (dy * 2)][x + (dx * 2)] == self.piece:
+                                        value += 10 * (x + dx) + 5 * (y + dy)
+                                except IndexError:
+                                    pass
+                        except IndexError:
+                            pass
+
+                        # Good if a piece has a valid move after moving
+                        try:
+                            if not board.isValidMove(((x, y), (x + dx, y + dy))):
+                                movable = False
+                        except IndexError:
+                            value -= 100 * (x*y)
+                    if movable:
+                        value += 10 * (x*y)
+                    else:
+                        value -= 100 * (x*y)
+
+                    # Check diagonals
+                    for dx, dy in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
+                        try:
+                            # You dont want pieces too close together
+                            if board.board[y + dy][x + dx] == self.piece:
+                                value -= 100 * (x + dx) + 50 * (y + dy)
+                            # You could work to eliminate this piece
+                            if board.board[y + dy][x + dx] == self.opponentPiece:
+                                for dx1, dy1 in [(1, 1), (-1, 1), (1, -1), (-1, -1)]:
+                                    if (x + dx, y + dy) == (dx + dx1, dy + dy1):
+                                        continue
+                                    if board.board[dy + dy1][dx + dx1] == self.piece:
+                                        value += 10 * (dx + dx1) + 5 * (dy + dy1)
+                                    elif board.board[dy+dy1][dx+dx1] == self.opponentPiece:
+                                        value -= 100 * (dx + dx1) + 50 * (dy + dy1)
+                        except IndexError:
+                            value -= 100 * (x + dx) + 50 * (y + dy)
+                    for dx, dy in [(2, 0), (0, 2), (0, -2), (-2, 0)]:
+                        #looking for close
+                        try:
+                            if board.board[y + dy][x + dx] == self.piece:
+                                value += 10 * (x + dx) + 5 * (y + dy)
+                        except IndexError:
+                            value += 10 * (x + dx) + 5 * (y + dy)
+        return value
+
+
+    # def miniMax(self, parentNode):
+    #     """ Commence Minimax algorithm of the game tree """
+    #     # Find the lowest value possible from the terminal nodes
+    #     for states in parentNode.children:
+    #         minValue = float('inf')
+    #         for terminalStates in states.children:
+    #             if terminalStates.value < minValue:
+    #                 minValue = terminalStates.value
+    #         states.value = minValue
+
+    #     maxValue = float('-inf')
+    #     maxNode = None
+    #     # Find the maximum value possible to decide which state to move to.
+    #     for gameState in parentNode.children:
+    #         if gameState.value > maxValue:
+    #             maxValue = gameState.value
+    #             maxNode = gameState
+    #     return maxNode
+
+
+    #couldnt figure out how to do prunning aka cutting search early,but this follows alpha beta search
+    def minimax(self,node, depth,alpha,beta,maximizingPlayer):
+        if depth == 0 or len(node.children) == 0:
+            return node.value
+
+        if maximizingPlayer:
+            bestValue = float('-inf')
+            for child in node.children:
+                v = self.minimax(child, depth - 1, alpha, beta ,False)
+                bestValue = max(bestValue, v)
+                if bestValue >= beta:
+                    return bestValue
+                alpha = max(alpha,bestValue)
+            return bestValue
+
+        else:   #* minimizing player *
+            bestValue = float('inf')
+            for child in node.children:
+                v = self.minimax(child, depth - 1, alpha, beta ,True)
+                bestValue = min(bestValue, v)
+                if bestValue <= alpha:
+                    return bestValue
+                beta = min(beta,bestValue)
+            return bestValue
+
+    def findNodeMove(self,parentNode,node,depth,value):
+        if (depth == 0 or len(node.children) == 0): 
+            if node.value == value and node.parent != parentNode:
+                return node.parent
+            else:
+                return None
+
+        move = None
+        for child in node.children:
+            move = self.findNodeMove(parentNode, child, depth-1, value)
+            if move != None:
+                return move
+
+    def treeSearch(self,node, depth):
+        v = self.minimax(node, depth, float('-inf'), float('inf'), False)
+        return self.findNodeMove(node,node,depth,v)
+
+
+    def placeAPiece(self):
+        """ Checks if there is any adjacent opponent piece for our pieces
+            and then places a piece in the opposite end to eliminate it """
+        # Check if you can eliminate any opponent piece by placing your piece
+        for y in range(0, 8):
+            for x in range(0, 8):
+                if self.board.board[y][x] == self.piece:
+                    for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+                        try:
+                            if (x + dx + dx) < 0 or (y + dy + dy) < 0:
+                                continue
+
+                            if (self.board.board[y + dy][x + dx] == self.opponentPiece
+                            and self.board.board[y + dy +dy][x + dx + dx] == "-"
+                            and (x + dx + dx, y + dy + dy) not in self.board.placeBanList):
+                                if x + dx + dx > 0 and y + dy + dy > 0:
+                                    self.board.placePiece((x + dx + dx, y + dy + dy), self.myColour)
+                                    return (x + dx + dx, y + dy + dy)
+                                else:
+                                    continue
+                        except IndexError:
+                            continue
+
+        # Tries to place a piece on the middle positions of the board first
+        counter = 0
+        while True:
+            lowerBound = 3
+            upperBound = 4
+            # The range for placing slowly grows outwards
+            # if it cannot find a place at first within a few tries
+            if counter > 5 and counter < 15:
+                lowerBound = 2
+                upperBound = 5
+            elif counter > 15 and counter < 50:
+                lowerBound = 1
+                upperBound = 6
+            elif counter > 50:
+                lowerBound = 0
+                upperBound = 7
+
+            x = randint(lowerBound, upperBound)
+            y = randint(lowerBound, upperBound)
+
+            counter += 1
+            # Checks if the piece will get eliminated next turn if we
+            # place a piece in the generated position
+            dangerPlace = False
+            for dx, dy in [(1, 0), (0, 1), (0, -1), (-1, 0)]:
+                # In order to get rid of negative indexing since its annoying
+                if (x + dx) < 0 or (y + dy) < 0:
+                    continue
+
+                try:
+                    if ((self.board.board[y+dy][x+dx] == self.opponentPiece or
+                    self.board.board[y+dy][x+dx] == "X") and
+                    self.board.board[y-dy][x-dx] == "-"):
+                        dangerPlace = True
+                        break
+                except IndexError:
+                    continue
+            if dangerPlace:
+                continue
+            # Place the piece if the game rules allow it and then return
+            if (x, y) not in self.board.placeBanList:
+                self.board.placePiece((x, y), self.myColour)
+                return ((x, y))
