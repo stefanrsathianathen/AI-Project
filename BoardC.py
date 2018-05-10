@@ -1,4 +1,4 @@
-
+import itertools
 class Board():
 
     def __init__(self):
@@ -14,6 +14,7 @@ class Board():
         self.n_turns = 0
         # Places where we can't place a piece in the placing phase
         self.placeBanList = [(0,0), (7,0), (0, 7), (7, 7)]
+        self.destoriedPieces = []
 
     def printBoard(self):
         for y in range(0, 8):
@@ -46,15 +47,16 @@ class Board():
         if self.isValidMove(positions):
             self.swapPieces(positions)
 
-        # If it is an undoMove
-        if eliminatedPieces != None:
-            for pieces in eliminatedPieces:
-                self.board[pieces[0][1]][pieces[0][0]] = pieces[1]
-            return
-
-        pieceType = self.board[positions[1][1]][positions[1][0]]
+        pieceType = self.board[positions[0][0]][positions[0][1]]
 
         opponentPiece = "B" if pieceType == "W" else "W"
+
+        # If it is an undoMove
+        if eliminatedPieces != None:
+            self.board[eliminatedPieces[0][1]][eliminatedPieces[0][0]] = opponentPiece
+            return
+
+        
 
         return (self.eliminatePieces(positions[1][0], positions[1][1],
                             pieceType, opponentPiece))
@@ -83,7 +85,7 @@ class Board():
             dy = int((positions[1][1] - positions[0][1])/2)
             if (self.board[positions[0][1] + dy][positions[0][0] + dx] != "W" and
             self.board[positions[0][1] + dy][positions[0][0] + dx] != "B"):
-                return False
+                return True
 
         # If the board is empty in the new position, return true
         if self.board[positions[1][1]][positions[1][0]] == "-":
@@ -217,3 +219,44 @@ class Board():
         (self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
            return True
         return False
+    
+    def findValidMoves(self, x, y):
+        """ Return valid moves a piece can make given the current board position """
+
+        # validMoves = []
+
+        # for dx, dy in [(1,0), (0,1), (-1,0), (0,-1)]:
+        #     try:
+        #         if x + dx  > 0 and y + dy  > 0:
+        #             if self.isValidMove(((x, y), (x + dx, y + dy))):
+        #                 validMoves.append(((x, y), (x + dx, y + dy)))
+        #         else:
+        #             continue
+        #     except IndexError:
+        #         continue
+
+        # return validMoves
+
+        validMoves = []
+
+        for dx, dy in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
+            if self.isValidMove(((x, y), (x + dx, y + dy))):
+                validMoves.append(((x, y), (x + dx, y + dy)))
+        return validMoves
+
+    def findMoves(self, piece):
+        """ Returns all the moves the white or
+            black pieces can make without moving anything """
+
+        moves = []
+
+        for y in range(0, len(self.board)):
+            for x in range(0, len(self.board[y])):
+                if (self.board[y][x] == piece):
+                    moves = list(itertools.chain(moves, self.findValidMoves(x, y)))
+
+        return moves
+
+    def makeAllMoves(self,moves):
+        for x in moves:
+            return self.move(x)

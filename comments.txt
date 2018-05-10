@@ -1,0 +1,8 @@
+Marzuk Amin 824100
+Stefan Sathianathen 868514
+
+We ended up using minmax with alpha beta prunning due to our attempt at using machine learning failing. We were trying to implement a  
+
+When we first implemented minmax we had diffuclties generating a large enough tree due to us copying the board for each node. As the amount of nodes that increase the amount of space our algorithm requires grows enormously. Therefore we attempted to limit the amount of board copies that we create.
+
+

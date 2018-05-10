@@ -40,19 +40,19 @@ class Player():
         elif self.myColour == "black" and self.board.n_turns < 24:
             self.board.n_turns += 1
             return self.placeAPiece()
-
+        DEPTH   = 4
         # Moving Phase
-        parentNode = g.GameNode(deepcopy(self.board), None)
+        parentNode = g.gameNode()
         # Create the game tree
-        self.createTree(parentNode)
+        self.createTree(parentNode,0, DEPTH, deepcopy(self.board))
+        # self.printTree(parentNode)
         # Find the best move using Minimax algorithm
-        nextMove = self.miniMax(parentNode)
+        # nextMove = self.miniMax(parentNode)
+        nextMove = self.treeSearch(parentNode,DEPTH)
         self.board.n_turns += 1
-        if nextMove == None:
-            return (None)
-        self.board.move(nextMove.move)
-        self.lastMove = nextMove.move
-        return nextMove.move
+        # t
+        self.board.move(nextMove.move[0])
+        return nextMove.move[0]
 
     def update(self, action):
         """ Receive the opponent's move and update our own board """
@@ -67,26 +67,80 @@ class Player():
 
         self.board.n_turns += 1
 
-    def createTree(self,parentNode):
-        for y in range(0,len(parentNode.board.board)):
-                for x in range(0,len(parentNode.board.board[y])):
-                    if self.board.board[y][x] == self.piece:
-                        states = self.gameStates(x,y, parentNode.board)
-                        for state in states:
-                            state.defineParent(parentNode)
-                            parentNode.addChild(state)
+    # def createTree(self,parentNode):
+    #     for y in range(0,len(parentNode.board.board)):
+    #             for x in range(0,len(parentNode.board.board[y])):
+    #                 if self.board.board[y][x] == self.piece:
+    #                     states = self.gameStates(x,y, parentNode.board)
+    #                     for state in states:
+    #                         state.defineParent(parentNode)
+    #                         parentNode.addChild(state)
 
-        for gameState in parentNode.children:
-            for y in range(0, len(gameState.board.board)):
-                for x in range(0, len(gameState.board.board[y])):
-                    if gameState.board.board[y][x] == self.opponentPiece:
-                        opponentStates = self.gameStates(x, y, gameState.board)
-                        for state in opponentStates:
-                            if state == None:
-                                continue
-                            state.value = self.score(state.board)
-                            state.defineParent(gameState)
-                            gameState.addChild(state)
+
+    #     for gameState in parentNode.children:
+    #         for y in range(0, len(parentNode.board.board)):
+    #             for x in range(0, len(parentNode.board.board)):
+    #                 if gameState.board.board[y][x] == self.opponentPiece:
+    #                     opponentStates = self.gameStates(x, y, gameState.board)
+    #                     for state in opponentStates:
+    #                         if state == None:
+    #                             continue
+    #                         state.value = self.score(state.board)
+    #                         state.defineParent(gameState)
+    #                         gameState.addChild(state)
+    def printTree(self,parentNode):
+        if len(parentNode.children) == 0:
+            print(parentNode.value)
+
+        else:
+            for x in parentNode.children:
+                self.printTree(x)
+
+    def createTree(self,parentNode,depth,maxdepth,boardcopy):
+        #get all elimatedPieces from moves
+        elimatedPieces = []
+        if depth > 0:
+            #make the parents move
+            elimatedPieces.append(boardcopy.makeAllMoves(parentNode.move))
+
+        if (depth % 2 == 0):
+            # my turn
+            moves = boardcopy.findMoves(self.piece)
+        else:
+            # opponents turn
+            moves = boardcopy.findMoves(self.opponentPiece)
+
+        for move in moves:
+            #create a state with this move and connect it to its parrent
+            childState = g.gameNode(move, parentNode)
+            #connect the parrent node to its child
+            parentNode.addChild(childState)
+            # just another test to make sure that
+            if None not in parentNode.move:
+                childState.addParentMoves(parentNode.move)
+            # Base Case/ Will return from the recursive calls only if this is true
+            if (depth + 1 == maxdepth):
+                elimatedPieces.append(boardcopy.move(move))
+                childState.value = self.score(boardcopy)
+                i = len(elimatedPieces)-1
+                i = 0
+                # print(childState.move)
+                for x in childState.move[::-1]:
+                    boardcopy.move(x,childState.move[i])
+                    i+=1
+                return
+
+            i = 0
+                # print(childState.move)
+            for x in childState.move[::-1]:
+                boardcopy.move(x,childState.move[i])
+                i+=1
+            self.createTree(childState, depth + 1, maxdepth, boardcopy)
+        return
+
+
+
+
 
 
     def gameStates(self, x, y, rootBoard):
@@ -97,9 +151,10 @@ class Player():
             try:
                 if x + dx  > 0 and y + dy  > 0:
                     if rootBoard.isValidMove(((x, y), (x + dx, y + dy))):
-                        tmpBoard = deepcopy(rootBoard)
-                        tmpBoard.move(((x, y), (x + dx, y + dy)))
-                        moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
+                        # tmpBoard = deepcopy(rootBoard)
+                        # tmpBoard.move(((x, y), (x + dx, y + dy)))
+                        moves.append(g.gameNode(((x, y), (x + dx, y + dy))))
+                        # moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
                 else:
                     continue
             except IndexError:
@@ -112,9 +167,9 @@ class Player():
         # Check if next move is a death
         value = 0
         if board.board.count(self.piece) > board.board.count(self.opponentPiece):
-            value += board.board.count(self.piece)**board.board.count(self.opponentPiece)
+            value += board.board.count(self.piece)*board.board.count(self.opponentPiece)
         else:
-            value -= board.board.count(self.piece)**board.board.count(self.opponentPiece)
+            value -= board.board.count(self.piece)*board.board.count(self.opponentPiece)
         for x in range(0,len(board.board)):
             for y in range(0,len(board.board)):
                 if board.board[y][x] == self.piece:
@@ -194,24 +249,77 @@ class Player():
         return value
 
 
-    def miniMax(self, parentNode):
-        """ Commence Minimax algorithm of the game tree """
-        # Find the lowest value possible from the terminal nodes
-        for states in parentNode.children:
-            minValue = float('inf')
-            for terminalStates in states.children:
-                if terminalStates.value < minValue:
-                    minValue = terminalStates.value
-            states.value = minValue
+    # def miniMax(self, parentNode):
+    #     """ Commence Minimax algorithm of the game tree """
+    #     # Find the lowest value possible from the terminal nodes
+    #     for states in parentNode.children:
+    #         minValue = float('inf')
+    #         for terminalStates in states.children:
+    #             if terminalStates.value < minValue:
+    #                 minValue = terminalStates.value
+    #         states.value = minValue
 
-        maxValue = float('-inf')
-        maxNode = None
-        # Find the maximum value possible to decide which state to move to.
-        for gameState in parentNode.children:
-            if gameState.value > maxValue:
-                maxValue = gameState.value
-                maxNode = gameState
-        return maxNode
+    #     maxValue = float('-inf')
+    #     maxNode = None
+    #     # Find the maximum value possible to decide which state to move to.
+    #     for gameState in parentNode.children:
+    #         if gameState.value > maxValue:
+    #             maxValue = gameState.value
+    #             maxNode = gameState
+    #     return maxNode
+
+
+    #couldnt figure out how to do prunning aka cutting search early,but this follows alpha beta search
+    def minimax(self,node, depth,alpha,beta,maximizingPlayer):
+        if depth == 0 or len(node.children) == 0:
+            if node.value == None:
+                pass
+            else:
+                return node.value
+
+        if maximizingPlayer:
+            bestValue = float('-inf')
+            for child in node.children:
+                v = self.minimax(child, depth - 1, alpha, beta ,False)
+                if v != float('inf'):
+                    bestValue = max(bestValue, v)
+                if bestValue >= beta:
+                    return bestValue
+                alpha = max(alpha,bestValue)
+            return bestValue
+
+        else:   #* minimizing player *
+            bestValue = float('inf')
+            for child in node.children:
+                v = self.minimax(child, depth - 1, alpha, beta ,True)
+                if v != float('-inf'):
+                    bestValue = min(bestValue, v)
+                if bestValue <= alpha:
+                    return bestValue
+                beta = min(beta,bestValue)
+            return bestValue
+
+    def findNodeMove(self,parentNode,node,depth,value):
+        if (depth == 0 or len(node.children) == 0): 
+            if node.value == value and node.parent != parentNode:
+                if node.parent == None:
+                    pass
+                else:
+                    return node.parent 
+            
+
+        move = None
+        for child in node.children:
+            move = self.findNodeMove(parentNode, child, depth-1, value)
+            if move == None:
+                pass
+            else:
+                return move
+
+    def treeSearch(self,node, depth):
+        v = self.minimax(node, depth, float('-inf'), float('inf'), False)
+        return self.findNodeMove(node,node,depth,v)
+
 
     def placeAPiece(self):
         """ Checks if there is any adjacent opponent piece for our pieces
@@ -255,7 +363,6 @@ class Player():
 
             x = randint(lowerBound, upperBound)
             y = randint(lowerBound, upperBound)
-            print(x, y)
 
             counter += 1
             # Checks if the piece will get eliminated next turn if we
