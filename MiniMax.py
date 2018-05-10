@@ -31,7 +31,7 @@ class MiniMax:
 
 
     def max_value(self, node):
-        print("MiniMax-->MAX: Visited Node :: ", node.move, node.value)
+        print("MiniMax-->MAX: Visited Node :: ", node.move, node.value, len(node.children))
         if self.isTerminal(node):
             return self.getUtility(node)
 
@@ -40,12 +40,11 @@ class MiniMax:
 
         successors_states = self.getSuccessors(node)
         for state in successors_states:
-            print(max_value)
             max_value = max(max_value, self.min_value(state))
         return max_value
 
     def min_value(self, node):
-        print("MiniMax-->MIN: Visited Node :: ", node.move, node.value)
+        print("MiniMax-->MIN: Visited Node :: ", node.move, node.value, len(node.children))
         if self.isTerminal(node):
             return self.getUtility(node)
 
@@ -54,7 +53,6 @@ class MiniMax:
 
         successor_states = self.getSuccessors(node)
         for state in successor_states:
-            print(min_value)
             min_value = min(min_value, self.max_value(state))
         return min_value
 

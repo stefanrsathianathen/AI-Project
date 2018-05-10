@@ -5,3 +5,9 @@ class GameNode():
 		self.value = value
 		self.board = board
 		self.children = []
+
+	def addChild(self, node):
+		self.children.append(node)
+
+	def defineParent(self, parent):
+		self.parent = parent

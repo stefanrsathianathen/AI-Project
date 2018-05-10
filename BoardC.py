@@ -27,12 +27,12 @@ class Board():
         """ Places the specified colour piece on the board and eliminates
             required pieces while adding the new position to placeBanList """
         x, y = place
-        if colour == "white":
+        if colour == "white" or colour == "W":
             self.board[y][x] = "W"
             self.placeBanList.append((x, y))
             self.pieces["white"] += 1
             self.eliminatePieces(x, y, "W", "B")
-        elif colour == "black":
+        elif colour == "black" or colour == "B":
             self.board[y][x] = "B"
             self.placeBanList.append((x, y))
             self.pieces["black"] += 1
@@ -50,7 +50,7 @@ class Board():
         # If it is an undoMove
         if eliminatedPieces != None:
             for pieces in eliminatedPieces:
-                self.board[pieces[0][1]][pieces[0][0]] = pieces[1]
+                self.placePiece((pieces[0][0], pieces[0][1]), pieces[1])
             return
 
         pieceType = self.board[positions[1][1]][positions[1][0]]
@@ -192,33 +192,6 @@ class Board():
         # The return value is only assigned if we want to undo the move later
         return eliminatedPieces
 
-    def notSafe(self, x, y, pieceType, opponentPiece):
-        """ Figure out if a piece needs to be eliminated
-            by game rules if so return True """
-
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            try:
-                if ((x + dx + dx) < 0 or (y + dy + dy) < 0):
-                    continue
-
-                if (self.board[y + dy][x + dx] == opponentPiece and
-                (self.board[y + dy + dy][x + dx + dx] == pieceType or
-                self.board[y + dy + dy][x + dx + dx] == "X")):
-                    return True
-
-            except IndexError:
-                continue
-
-        if ((x + 1 < 8) and (x - 1 >= 0) and
-        (self.board[y][x + 1] == opponentPiece or self.board[y][x + 1] == "X") and
-        (self.board[y][x - 1] == opponentPiece or self.board[y][x - 1] == "X")):
-            return True
-        elif ((y + 1 < 8) and (y - 1 >= 0) and
-        (self.board[y + 1][x] == opponentPiece or self.board[y + 1][x] == "X") and
-        (self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
-           return True
-        return False
-
     def findValidMoves(self, x, y):
         """ Return valid moves a piece can make given the current board position """
 
@@ -239,6 +212,8 @@ class Board():
         for y in range(0, len(self.board)):
             for x in range(0, len(self.board[y])):
                 if (self.board[y][x] == piece):
-                    moves = list(itertools.chain(moves, self.findValidMoves(x, y)))
+                    pieceMoves = self.findValidMoves(x, y)
+                    for move in pieceMoves:
+                        moves.append(move)
 
         return moves
