@@ -82,8 +82,6 @@ class Player():
             node.parent = parent
             # Calculate the utilities of the last nodes
             node.value = self.score(node.board, node.move)
-            # Add the leaf node to the parent node
-            # parent.addChild(node)
             return
 
         node.parent = parent
@@ -107,61 +105,23 @@ class Player():
             # recursively call the same function on the child
             self.createTree(childNode, node, depth + 1, maxDepth)
 
-            #undo the move before returning
+            #undo the move before doing the next move
             node.board.move((childNode.move[0][1], childNode.move[0][0]), childNode.move[1])
 
         return
 
-
-        # for y in range(0,len(parentState.board.board)):
-        #         for x in range(0,len(parentState.board.board[y])):
-        #             if self.board.board[y][x] == self.piece:
-        #                 states = self.gameStates(x, y, parentState)
-        #                 for state in states:
-        #                     state.defineParent(parentState)
-        #                     parentState.addChild(state)
-        #
-        # for gameState in parentState.children:
-        #     for y in range(0, len(gameState.board.board)):
-        #         for x in range(0, len(gameState.board.board[y])):
-        #             if gameState.board.board[y][x] == self.opponentPiece:
-        #                 opponentStates = self.gameStates(x, y, gameState.board)
-        #                 for state in opponentStates:
-        #                     if state == None:
-        #                         continue
-        #                     state.value = self.score(state.board)
-        #                     state.defineParent(gameState)
-        #                     gameState.addChild(state)
-
-
-    # def gameStates(self, x, y, rootBoard):
-    #     """ Create the possible game states for current piece """
-    #     moves = []
-    #
-    #     for dx, dy in [(1,0), (0,1), (-1,0), (0,-1), (2,0), (0,2), (-2,0), (0,-2)]:
-    #         try:
-    #             if x + dx  > 0 and y + dy  > 0:
-    #                 if rootBoard.isValidMove(((x, y), (x + dx, y + dy))):
-    #                     tmpBoard = deepcopy(rootBoard)
-    #                     tmpBoard.move(((x, y), (x + dx, y + dy)))
-    #                     moves.append(g.GameNode(tmpBoard, ((x, y), (x + dx, y + dy))))
-    #             else:
-    #                 continue
-    #         except IndexError:
-    #             continue
-    #     return moves
-
     def miniMax(self, parentState):
         """ Commence Minimax algorithm of the game tree """
         # Find the lowest value possible from the terminal nodes
+        infinty = float('inf')
         for states in parentState.children:
-            minValue = float('inf')
+            minValue = infinty
             for terminalStates in states.children:
                 if terminalStates.value < minValue:
                     minValue = terminalStates.value
                     states.value = minValue
 
-                    maxValue = float('-inf')
+                    maxValue = -infinty
                     maxNode = None
                     # Find the maximum value possible to decide which state to move to.
                     for gameState in parentState.children:
@@ -181,10 +141,10 @@ class Player():
             value -= board.pieces[self.myColour] * board.pieces[self.opponentColour]
 
         if board.pieces[self.myColour] < self.board.pieces[self.myColour]:
-            value = float('-inf')
+            value = 0
             return
         elif board.pieces[self.opponentColour] < self.board.pieces[self.opponentColour]:
-            value = float('inf')
+            value = 0
             return
         elif move in self.seqeunceOfMoves:
             value -= 10000 * (self.seqeunceOfMoves.index(move))
