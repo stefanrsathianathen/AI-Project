@@ -121,14 +121,15 @@ class Player():
                     minValue = terminalStates.value
                     states.value = minValue
 
-                    maxValue = -infinty
-                    maxNode = None
-                    # Find the maximum value possible to decide which state to move to.
-                    for gameState in parentState.children:
-                        if gameState.value > maxValue:
-                            maxValue = gameState.value
-                            maxNode = gameState
-                            return maxNode
+        maxValue = -infinty
+        maxNode = None
+        # Find the maximum value possible to decide which state to move to.
+        for gameState in parentState.children:
+            if gameState.value > maxValue:
+                maxValue = gameState.value
+                maxNode = gameState
+
+        return maxNode
 
     def score(self, board, move):
         """ Determines a heuristic value given a certain board state """
