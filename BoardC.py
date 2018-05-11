@@ -192,6 +192,20 @@ class Board():
         # The return value is only assigned if we want to undo the move later
         return eliminatedPieces
 
+    def notSafe(self, x, y, pieceType, opponentPiece):
+        """ Figure out if a piece needs to be eliminated
+            by game rules if so return True """
+
+        if ((x + 1 < 8) and (x - 1 >= 0) and
+        (self.board[y][x + 1] == opponentPiece or self.board[y][x + 1] == "X") and
+        (self.board[y][x - 1] == opponentPiece or self.board[y][x - 1] == "X")):
+            return True
+        elif ((y + 1 < 8) and (y - 1 >= 0) and
+        (self.board[y + 1][x] == opponentPiece or self.board[y + 1][x] == "X") and
+        (self.board[y - 1][x] == opponentPiece or self.board[y - 1][x] == "X")):
+           return True
+        return False
+
     def findValidMoves(self, x, y):
         """ Return valid moves a piece can make given the current board position """
 
